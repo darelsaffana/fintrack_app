@@ -26,12 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       await context.read<AuthProvider>().login(_email.text.trim(), _password.text);
-      // Muat data (kategori, transaksi, dashboard) sebelum pindah halaman,
-      // supaya Dashboard tidak sempat tampil kosong.
       if (mounted) await context.read<AppProvider>().loadAll();
 
-      // Pindah langsung ke MainShell secara eksplisit, tidak mengandalkan
-      // rebuild otomatis dari _RootGate (yang kadang butuh refresh di web).
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const MainShell()),
@@ -47,62 +43,175 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon}) {
+      return InputDecoration(
+        labelText: labelText,
+        labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+        floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+        prefixIcon: Icon(prefixIcon, color: AppColors.muted, size: 20),
+        filled: true,
+        fillColor: AppColors.cardBorder.withOpacity(0.15),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.expense, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.expense, width: 1.5),
+        ),
+      );
+    }
+
     return Scaffold(
+      backgroundColor: AppColors.bgApp, 
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 44, height: 44,
-                        decoration: BoxDecoration(color: AppColors.accent, borderRadius: BorderRadius.circular(12)),
-                        child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text('Fintrack', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppColors.text)),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  const Text('Masuk untuk mulai catat keuanganmu', textAlign: TextAlign.center, style: TextStyle(color: AppColors.muted)),
-                  const SizedBox(height: 28),
-                  TextFormField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    validator: (v) => (v == null || v.isEmpty) ? 'Email wajib diisi' : null,
-                  ),
-                  const SizedBox(height: 14),
-                  TextFormField(
-                    controller: _password,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13)),
-                  ],
-                  const SizedBox(height: 22),
-                  ElevatedButton(
-                    onPressed: _loading ? null : _submit,
-                    child: _loading
-                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : const Text('Masuk'),
-                  ),
-                  const SizedBox(height: 14),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
-                    child: const Text('Belum punya akun? Daftar di sini'),
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 32,
+                    offset: const Offset(0, 12),
                   ),
                 ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // LOGO DAN IDENTITAS
+                    Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/LogoFintrack.png', // Menggunakan LogoFintrack.png
+                          width: 80, 
+                          height: 50,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 12), 
+                        const Text(
+                          'Fintrack',
+                          style: TextStyle(
+                            fontSize: 30, 
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.text,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Masuk untuk mulai catat keuanganmu',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.muted,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // FORM INPUTS
+                    TextFormField(
+                      controller: _email,
+                      keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      decoration: fieldDecoration(
+                        labelText: 'Email', 
+                        prefixIcon: Icons.email_rounded,
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Email wajib diisi' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _password,
+                      obscureText: true,
+                      style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      decoration: fieldDecoration(
+                        labelText: 'Password', 
+                        prefixIcon: Icons.lock_rounded,
+                      ),
+                      validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
+                    ),
+
+                    if (_error != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: AppColors.expense.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.expense.withOpacity(0.2)),
+                        ),
+                        child: Text(
+                          _error!, 
+                          style: const TextStyle(
+                            color: AppColors.expense, 
+                            fontSize: 13, 
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 28),
+
+                    // BUTTONS
+                    ElevatedButton(
+                      onPressed: _loading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      child: _loading
+                          ? const SizedBox(
+                              width: 20, 
+                              height: 20, 
+                              child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                            )
+                          : const Text(
+                              'Masuk', 
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.accent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Belum punya akun? Daftar di sini', 
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -53,11 +53,12 @@ class _MainShellState extends State<MainShell> {
     final provider = context.watch<AppProvider>();
 
     final body = !_loaded && provider.loading
-        ? const Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator(color: AppColors.accent))
         : IndexedStack(index: _index, children: _pages);
 
-    if (isWide) {
+if (isWide) {
       return Scaffold(
+        // Kita hapus backgroundColor agar Scaffold menggunakan warna default tema Anda
         body: Row(
           children: [
             _Sidebar(index: _index, onSelect: (i) => setState(() => _index = i)),
@@ -65,13 +66,22 @@ class _MainShellState extends State<MainShell> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Header desktop yang elegan
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                    child: Text(_titles[_index], style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.text)),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 28),
+                    child: Text(
+                      _titles[_index],
+                      style: const TextStyle(
+                        fontSize: 28, 
+                        fontWeight: FontWeight.w900, 
+                        color: AppColors.text,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: body,
                     ),
                   ),
@@ -83,18 +93,61 @@ class _MainShellState extends State<MainShell> {
       );
     }
 
+// TAMPILAN MOBILE (Narrow Screens)
     return Scaffold(
-      appBar: AppBar(title: Text(_titles[_index])),
-      body: Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: body),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
-        backgroundColor: AppColors.sidebar,
-        indicatorColor: AppColors.accent.withOpacity(0.18),
-        destinations: [
-          for (final d in _destinations)
-            NavigationDestination(icon: Icon(d.icon), label: d.label),
-        ],
+      // Kita hapus juga di sini agar warna latar belakang kembali normal
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Custom Header Mobile yang menyatu indah tanpa AppBar kaku
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Text(
+                _titles[_index],
+                style: const TextStyle(
+                  fontSize: 26, 
+                  fontWeight: FontWeight.w900, 
+                  color: AppColors.text,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: body,
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: AppColors.cardBorder.withOpacity(0.4),
+              width: 1,
+            ),
+          ),
+        ),
+        child: NavigationBar(
+          selectedIndex: _index,
+          onDestinationSelected: (i) => setState(() => _index = i),
+          backgroundColor: AppColors.sidebar,
+          elevation: 0,
+          height: 68,
+          indicatorColor: AppColors.accent.withOpacity(0.12),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: [
+            for (final d in _destinations)
+              NavigationDestination(
+                icon: Icon(d.icon, color: AppColors.muted, size: 22),
+                selectedIcon: Icon(d.icon, color: AppColors.accent, size: 24),
+                label: d.label,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -116,41 +169,80 @@ class _Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 224,
-      color: AppColors.sidebar,
+      width: 260, // Sedikit diperlebar agar tata letak sidebar lebih lega
+      decoration: BoxDecoration(
+        color: AppColors.sidebar,
+        border: Border(
+          right: BorderSide(
+            color: AppColors.cardBorder.withOpacity(0.4),
+            width: 1,
+          ),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // LOGO BRANDING DI SIDEBAR
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            padding: const EdgeInsets.fromLTRB(24, 36, 24, 32),
             child: Row(
               children: [
                 Container(
-                  width: 32, height: 32,
-                  decoration: BoxDecoration(color: AppColors.accent, borderRadius: BorderRadius.circular(8)),
-                  child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 16),
+                  width: 38, 
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withOpacity(0.12), 
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.accent.withOpacity(0.3), width: 1.5),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet_rounded, 
+                    color: AppColors.accent, 
+                    size: 18,
+                  ),
                 ),
-                const SizedBox(width: 10),
-                const Text('Fintrack', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.text)),
+                const SizedBox(width: 12),
+                const Text(
+                  'Fintrack', 
+                  style: TextStyle(
+                    fontSize: 20, 
+                    fontWeight: FontWeight.w900, 
+                    color: AppColors.text,
+                    letterSpacing: -0.5,
+                  ),
+                ),
               ],
             ),
           ),
+          
+          // ITEM NAVIGATION SIDEBAR
           for (int i = 0; i < _items.length; i++)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Material(
-                color: i == index ? AppColors.accent.withOpacity(0.12) : Colors.transparent,
+                color: i == index ? AppColors.accent.withOpacity(0.1) : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () => onSelect(i),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
-                        Icon(_items[i].icon, size: 19, color: i == index ? AppColors.accent : AppColors.muted),
-                        const SizedBox(width: 12),
-                        Text(_items[i].label, style: TextStyle(color: i == index ? AppColors.accent : AppColors.muted, fontWeight: FontWeight.w600, fontSize: 13.5)),
+                        Icon(
+                          _items[i].icon, 
+                          size: 20, 
+                          color: i == index ? AppColors.accent : AppColors.muted,
+                        ),
+                        const SizedBox(width: 14),
+                        Text(
+                          _items[i].label, 
+                          style: TextStyle(
+                            color: i == index ? AppColors.accent : AppColors.muted,
+                            fontWeight: i == index ? FontWeight.bold : FontWeight.w600, 
+                            fontSize: 14,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -158,9 +250,24 @@ class _Sidebar extends StatelessWidget {
               ),
             ),
           const Spacer(),
-          const Padding(
-            padding: EdgeInsets.all(20),
-            child: Text('Fintrack · v1.0', style: TextStyle(color: AppColors.mutedDim, fontSize: 11)),
+          
+          // FOOTER SIDEBAR
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded, size: 14, color: AppColors.mutedDim.withOpacity(0.6)),
+                const SizedBox(width: 6),
+                const Text(
+                  'Fintrack · v1.0', 
+                  style: TextStyle(
+                    color: AppColors.mutedDim, 
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

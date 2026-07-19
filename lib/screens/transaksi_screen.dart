@@ -15,78 +15,153 @@ class TransaksiScreen extends StatefulWidget {
 }
 
 class _TransaksiScreenState extends State<TransaksiScreen> {
-  String _filter = 'all';
+  String _filter = 'all'; // Logika asli dipertahankan
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>();
-    final list = provider.transactions.where((t) => _filter == 'all' || t.type == _filter).toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    final provider = context.watch<AppProvider>(); // Logika asli dipertahankan
+    final list = provider.transactions.where((t) => _filter == 'all' || t.type == _filter).toList() // Logika asli dipertahankan
+      ..sort((a, b) => b.date.compareTo(a.date)); // Logika asli dipertahankan
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: ElevatedButton.icon(
-            onPressed: () => _openForm(context),
-            icon: const Icon(Icons.add, size: 18),
-            label: const Text('Tambah Transaksi'),
-          ),
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            _FilterChip(label: 'Semua', selected: _filter == 'all', onTap: () => setState(() => _filter = 'all')),
-            const SizedBox(width: 8),
-            _FilterChip(label: 'Pemasukan', selected: _filter == 'income', onTap: () => setState(() => _filter = 'income')),
-            const SizedBox(width: 8),
-            _FilterChip(label: 'Pengeluaran', selected: _filter == 'expense', onTap: () => setState(() => _filter = 'expense')),
-          ],
-        ),
-        const SizedBox(height: 14),
-        Expanded(
-          child: list.isEmpty
-              ? const EmptyState(message: 'Tidak ada transaksi untuk ditampilkan.')
-              : Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.cardBorder),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: ListView.builder(
-                    itemCount: list.length,
-                    itemBuilder: (context, i) => TransactionTile(
-                      transaction: list[i],
-                      onEdit: () => _openForm(context, existing: list[i]),
-                      onDelete: () => _confirmDelete(context, list[i]),
-                    ),
+    return Padding(
+      // Padding halaman luar disamakan agar layout lapang dan konsisten
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Row Header: Judul halaman disandingkan dengan tombol aksi
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Tambah Transaksi',
+                style: TextStyle(
+                  color: AppColors.text,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _openForm(context), // Logika asli dipertahankan
+                icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
+                label: const Text(
+                  'Tambah',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-        ),
-      ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Container Tab Filter berbentuk pil menyatu (segmented control) yang elegan
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColors.card.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _FilterChip(
+                    label: 'Semua', 
+                    selected: _filter == 'all', 
+                    onTap: () => setState(() => _filter = 'all'), // Logika asli dipertahankan[cite: 4]
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _FilterChip(
+                    label: 'Pemasukan', 
+                    selected: _filter == 'income', 
+                    onTap: () => setState(() => _filter == 'income' ? null : _filter = 'income'), // Logika asli dipertahankan[cite: 4]
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _FilterChip(
+                    label: 'Pengeluaran', 
+                    selected: _filter == 'expense', 
+                    onTap: () => setState(() => _filter == 'expense' ? null : _filter = 'expense'), // Logika asli dipertahankan[cite: 4]
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          Expanded(
+            child: list.isEmpty
+                ? const EmptyState(message: 'Tidak ada transaksi untuk ditampilkan.') // Logika asli dipertahankan[cite: 4]
+                : Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(24), // Sudut melengkung 24 agar senada
+                      border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: list.length, // Logika asli dipertahankan[cite: 4]
+                      itemBuilder: (context, i) => TransactionTile(
+                        transaction: list[i], // Logika asli dipertahankan[cite: 4]
+                        onEdit: () => _openForm(context, existing: list[i]), // Logika asli dipertahankan[cite: 4]
+                        onDelete: () => _confirmDelete(context, list[i]), // Logika asli dipertahankan[cite: 4]
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
+  // Dialog konfirmasi hapus bergaya modern
   Future<void> _confirmDelete(BuildContext context, Transaction t) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Hapus transaksi?'),
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Hapus transaksi?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: const Text('Transaksi yang dihapus tidak dapat dikembalikan.'),
+        actionsPadding: const EdgeInsets.only(right: 16, bottom: 12),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Hapus')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false), 
+            child: const Text('Batal', style: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true), 
+            child: const Text('Hapus', style: TextStyle(color: AppColors.expense, fontWeight: FontWeight.bold)),
+          ),
         ],
       ),
     );
     if (ok == true && context.mounted) {
       try {
-        await context.read<AppProvider>().deleteTransaction(t.id);
+        await context.read<AppProvider>().deleteTransaction(t.id); // Logika asli dipertahankan[cite: 4]
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(extractErrorMessage(e))));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(extractErrorMessage(e)))); // Logika asli dipertahankan[cite: 4]
         }
       }
     }
@@ -97,12 +172,13 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.card,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => _TransactionForm(existing: existing),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))), // Sudut bottomsheet diubah menjadi 28 agar sangat halus
+      builder: (_) => _TransactionForm(existing: existing), // Logika asli dipertahankan[cite: 4]
     );
   }
 }
 
+// Desain ulang FilterChip dengan visual modern
 class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
@@ -113,15 +189,31 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accent.withOpacity(0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? AppColors.accent.withOpacity(0.4) : AppColors.cardBorder),
+          color: selected ? AppColors.accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(11),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppColors.accent.withOpacity(0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : null,
         ),
-        child: Text(label, style: TextStyle(color: selected ? AppColors.accent : AppColors.muted, fontSize: 12, fontWeight: FontWeight.w600)),
+        alignment: Alignment.center,
+        child: Text(
+          label, 
+          style: TextStyle(
+            color: selected ? Colors.white : AppColors.muted, 
+            fontSize: 13, 
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -148,26 +240,26 @@ class _TransactionFormState extends State<_TransactionForm> {
   @override
   void initState() {
     super.initState();
-    final e = widget.existing;
-    _type = e?.type ?? 'expense';
-    _categoryId = e?.categoryId;
-    _amount.text = e != null ? e.amount.toStringAsFixed(0) : '';
-    _description.text = e?.description ?? '';
-    _date = e?.date ?? DateTime.now();
+    final e = widget.existing; // Logika asli dipertahankan[cite: 4]
+    _type = e?.type ?? 'expense'; // Logika asli dipertahankan[cite: 4]
+    _categoryId = e?.categoryId; // Logika asli dipertahankan[cite: 4]
+    _amount.text = e != null ? e.amount.toStringAsFixed(0) : ''; // Logika asli dipertahankan[cite: 4]
+    _description.text = e?.description ?? ''; // Logika asli dipertahankan[cite: 4]
+    _date = e?.date ?? DateTime.now(); // Logika asli dipertahankan[cite: 4]
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>();
-    final cats = _type == 'income' ? provider.incomeCategories : provider.expenseCategories;
+    final provider = context.watch<AppProvider>(); // Logika asli dipertahankan[cite: 4]
+    final cats = _type == 'income' ? provider.incomeCategories : provider.expenseCategories; // Logika asli dipertahankan[cite: 4]
     if (_categoryId == null || !cats.any((c) => c.id == _categoryId)) {
-      _categoryId = cats.isNotEmpty ? cats.first.id : null;
+      _categoryId = cats.isNotEmpty ? cats.first.id : null; // Logika asli dipertahankan[cite: 4]
     }
 
     return Padding(
       padding: EdgeInsets.only(
-        left: 20, right: 20, top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        left: 24, right: 24, top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
       child: SingleChildScrollView(
         child: Form(
@@ -175,59 +267,159 @@ class _TransactionFormState extends State<_TransactionForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(widget.existing == null ? 'Tambah Transaksi' : 'Ubah Transaksi',
-                  style: const TextStyle(color: AppColors.text, fontSize: 17, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 18),
-              _typeToggle(),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<int>(
-                value: _categoryId,
-                decoration: const InputDecoration(labelText: 'Kategori'),
-                dropdownColor: AppColors.card,
-                items: [for (final c in cats) DropdownMenuItem(value: c.id, child: Text(c.name))],
-                onChanged: (v) => setState(() => _categoryId = v),
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _amount,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Jumlah (Rp)'),
-                validator: (v) => (v == null || double.tryParse(v) == null || double.parse(v) <= 0) ? 'Masukkan jumlah yang valid' : null,
-              ),
-              const SizedBox(height: 14),
-              InkWell(
-                onTap: _pickDate,
-                child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Tanggal'),
-                  child: Text('${_date.day}/${_date.month}/${_date.year}', style: const TextStyle(color: AppColors.text)),
+              // Garis handle bottomsheet minimalis ala aplikasi modern
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBorder,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 14),
+              Text(
+                widget.existing == null ? 'Tambah Transaksi' : 'Ubah Transaksi', // Logika asli dipertahankan[cite: 4]
+                style: const TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w800), // Diganti w800 agar konsisten dengan perbaikan error sebelumnya
+              ),
+              const SizedBox(height: 20),
+              
+              _typeToggle(),
+              const SizedBox(height: 18),
+              
+              // Kustomisasi dropdown agar bergaya modern
+              DropdownButtonFormField<int>(
+                value: _categoryId, // Logika asli dipertahankan[cite: 4]
+                dropdownColor: AppColors.card,
+                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  labelText: 'Kategori',
+                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  filled: true,
+                  fillColor: AppColors.cardBorder.withOpacity(0.15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: [for (final c in cats) DropdownMenuItem(value: c.id, child: Text(c.name))], // Logika asli dipertahankan[cite: 4]
+                onChanged: (v) => setState(() => _categoryId = v), // Logika asli dipertahankan[cite: 4]
+              ),
+              const SizedBox(height: 16),
+              
+              // Kustomisasi input Jumlah (Rp)
               TextFormField(
-                controller: _description,
-                decoration: const InputDecoration(labelText: 'Deskripsi (opsional)'),
+                controller: _amount, // Logika asli dipertahankan[cite: 4]
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  labelText: 'Jumlah (Rp)',
+                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+                  filled: true,
+                  fillColor: AppColors.cardBorder.withOpacity(0.15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+                  ),
+                ),
+                validator: (v) => (v == null || double.tryParse(v) == null || double.parse(v) <= 0) ? 'Masukkan jumlah yang valid' : null, // Logika asli dipertahankan[cite: 4]
+              ),
+              const SizedBox(height: 16),
+              
+              // Kustomisasi pemilih Tanggal
+              InkWell(
+                onTap: _pickDate, // Logika asli dipertahankan[cite: 4]
+                borderRadius: BorderRadius.circular(14),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Tanggal',
+                    labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                    filled: true,
+                    fillColor: AppColors.cardBorder.withOpacity(0.15),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${_date.day}/${_date.month}/${_date.year}', // Logika asli dipertahankan[cite: 4]
+                        style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      ),
+                      const Icon(Icons.calendar_month_rounded, size: 18, color: AppColors.muted),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // Kustomisasi input Deskripsi
+              TextFormField(
+                controller: _description, // Logika asli dipertahankan[cite: 4]
+                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi (opsional)',
+                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+                  filled: true,
+                  fillColor: AppColors.cardBorder.withOpacity(0.15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+                  ),
+                ),
               ),
               if (_error != null) ...[
-                const SizedBox(height: 10),
-                Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13)),
+                const SizedBox(height: 12),
+                Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13, fontWeight: FontWeight.bold)), // Logika asli dipertahankan[cite: 4]
               ],
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+              
+              // Baris tombol aksi bawah
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                      child: const Text('Batal'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        foregroundColor: AppColors.muted,
+                        side: BorderSide(color: AppColors.cardBorder),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      child: const Text('Batal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _saving ? null : _submit,
-                      child: _saving
+                      onPressed: _saving ? null : _submit, // Logika asli dipertahankan[cite: 4]
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      child: _saving // Logika asli dipertahankan[cite: 4]
                           ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Simpan'),
+                          : const Text('Simpan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                   ),
                 ],
@@ -239,52 +431,95 @@ class _TransactionFormState extends State<_TransactionForm> {
     );
   }
 
+  // Tipe Toggle (Pemasukan / Pengeluaran) yang dimodernisasi
   Widget _typeToggle() {
     Widget option(String value, String label, Color color) {
-      final selected = _type == value;
+      final selected = _type == value; // Logika asli dipertahankan[cite: 4]
       return Expanded(
         child: InkWell(
-          onTap: () => setState(() { _type = value; _categoryId = null; }),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(color: selected ? color.withOpacity(0.12) : Colors.transparent),
+          onTap: () => setState(() { _type = value; _categoryId = null; }), // Logika asli dipertahankan[cite: 4]
+          borderRadius: BorderRadius.circular(10),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: selected ? color.withOpacity(0.12) : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: selected ? color : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
             alignment: Alignment.center,
-            child: Text(label, style: TextStyle(color: selected ? color : AppColors.muted, fontWeight: FontWeight.w600, fontSize: 13)),
+            child: Text(
+              label, 
+              style: TextStyle(
+                color: selected ? color : AppColors.muted, 
+                fontWeight: FontWeight.bold, 
+                fontSize: 13,
+              ),
+            ),
           ),
         ),
       );
     }
 
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.cardBorder)),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.cardBorder.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(14), 
+        border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+      ),
       clipBehavior: Clip.antiAlias,
-      child: Row(children: [option('income', 'Pemasukan', AppColors.income), option('expense', 'Pengeluaran', AppColors.expense)]),
+      child: Row(children: [
+        option('income', 'Pemasukan', AppColors.income), 
+        const SizedBox(width: 6),
+        option('expense', 'Pengeluaran', AppColors.expense),
+      ]),
     );
   }
 
-  Future<void> _pickDate() async {
+Future<void> _pickDate() async {
     final picked = await showDatePicker(
-      context: context, initialDate: _date, firstDate: DateTime(2020), lastDate: DateTime(2100),
+      context: context, 
+      initialDate: _date, 
+      firstDate: DateTime(2020), 
+      lastDate: DateTime(2100),
+      // Styling DatePicker bawaan agar membulat modern
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            // Diubah dari DialogTheme menjadi DialogThemeData
+            dialogTheme: DialogThemeData(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-    if (picked != null) setState(() => _date = picked);
+    if (picked != null) setState(() => _date = picked); // Logika asli dipertahankan
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() { _saving = true; _error = null; });
+    if (!_formKey.currentState!.validate()) return; // Logika asli dipertahankan[cite: 4]
+    setState(() { _saving = true; _error = null; }); // Logika asli dipertahankan[cite: 4]
     try {
-      final provider = context.read<AppProvider>();
-      final amount = double.parse(_amount.text);
+      final provider = context.read<AppProvider>(); // Logika asli dipertahankan[cite: 4]
+      final amount = double.parse(_amount.text); // Logika asli dipertahankan[cite: 4]
       if (widget.existing == null) {
-        await provider.addTransaction(categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim());
+        await provider.addTransaction(categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim()); // Logika asli dipertahankan[cite: 4]
       } else {
-        await provider.editTransaction(widget.existing!.id, categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim());
+        await provider.editTransaction(widget.existing!.id, categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim()); // Logika asli dipertahankan[cite: 4]
       }
-      if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context); // Logika asli dipertahankan[cite: 4]
     } catch (e) {
-      setState(() => _error = extractErrorMessage(e));
+      setState(() => _error = extractErrorMessage(e)); // Logika asli dipertahankan[cite: 4]
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) setState(() => _saving = false); // Logika asli dipertahankan[cite: 4]
     }
   }
 }

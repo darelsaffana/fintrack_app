@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - Android emulator -> http://10.0.2.2:8000/api
 /// - iOS simulator / desktop / web -> http://127.0.0.1:8000/api
 /// - Physical device -> http://<your-computer-ip>:8000/api
-const String kApiBaseUrl = 'http://127.0.0.1:8000/api';
+const String kApiBaseUrl = 'http://192.168.1.46:8000/api';
+// const String kApiBaseUrl = 'http://127.0.0.1:8000/api';
 
 class ApiClient {
   ApiClient._internal() {
