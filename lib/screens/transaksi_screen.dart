@@ -33,7 +33,7 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Tambah Transaksi',
                 style: TextStyle(
                   color: AppColors.text,
@@ -147,7 +147,7 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false), 
-            child: const Text('Batal', style: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600)),
+            child: Text('Batal', style: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true), 
@@ -281,7 +281,7 @@ class _TransactionFormState extends State<_TransactionForm> {
               ),
               Text(
                 widget.existing == null ? 'Tambah Transaksi' : 'Ubah Transaksi', // Logika asli dipertahankan[cite: 4]
-                style: const TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w800), // Diganti w800 agar konsisten dengan perbaikan error sebelumnya
+                style: TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w800), // Diganti w800 agar konsisten dengan perbaikan error sebelumnya
               ),
               const SizedBox(height: 20),
               
@@ -292,10 +292,10 @@ class _TransactionFormState extends State<_TransactionForm> {
               DropdownButtonFormField<int>(
                 value: _categoryId, // Logika asli dipertahankan[cite: 4]
                 dropdownColor: AppColors.card,
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Kategori',
-                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
                   filled: true,
                   fillColor: AppColors.cardBorder.withOpacity(0.15),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -313,10 +313,10 @@ class _TransactionFormState extends State<_TransactionForm> {
               TextFormField(
                 controller: _amount, // Logika asli dipertahankan[cite: 4]
                 keyboardType: TextInputType.number,
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Jumlah (Rp)',
-                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
                   floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: AppColors.cardBorder.withOpacity(0.15),
@@ -341,7 +341,7 @@ class _TransactionFormState extends State<_TransactionForm> {
                 child: InputDecorator(
                   decoration: InputDecoration(
                     labelText: 'Tanggal',
-                    labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                    labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
                     filled: true,
                     fillColor: AppColors.cardBorder.withOpacity(0.15),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -355,9 +355,9 @@ class _TransactionFormState extends State<_TransactionForm> {
                     children: [
                       Text(
                         '${_date.day}/${_date.month}/${_date.year}', // Logika asli dipertahankan[cite: 4]
-                        style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                       ),
-                      const Icon(Icons.calendar_month_rounded, size: 18, color: AppColors.muted),
+                      Icon(Icons.calendar_month_rounded, size: 18, color: AppColors.muted),
                     ],
                   ),
                 ),
@@ -367,10 +367,10 @@ class _TransactionFormState extends State<_TransactionForm> {
               // Kustomisasi input Deskripsi
               TextFormField(
                 controller: _description, // Logika asli dipertahankan[cite: 4]
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Deskripsi (opsional)',
-                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
                   floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: AppColors.cardBorder.withOpacity(0.15),

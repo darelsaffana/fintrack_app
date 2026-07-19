@@ -71,7 +71,7 @@ if (isWide) {
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 28),
                     child: Text(
                       _titles[_index],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28, 
                         fontWeight: FontWeight.w900, 
                         color: AppColors.text,
@@ -105,7 +105,7 @@ if (isWide) {
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
               child: Text(
                 _titles[_index],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26, 
                   fontWeight: FontWeight.w900, 
                   color: AppColors.text,
@@ -193,7 +193,7 @@ class _Sidebar extends StatelessWidget {
                   height: 38,
                 ),
                 const SizedBox(width: 12),
-                const Text(
+                Text(
                   'Fintrack', 
                   style: TextStyle(
                     fontSize: 20, 
@@ -249,7 +249,7 @@ class _Sidebar extends StatelessWidget {
               children: [
                 Icon(Icons.info_outline_rounded, size: 14, color: AppColors.mutedDim.withOpacity(0.6)),
                 const SizedBox(width: 6),
-                const Text(
+                Text(
                   'Fintrack · v1.0', 
                   style: TextStyle(
                     color: AppColors.mutedDim, 

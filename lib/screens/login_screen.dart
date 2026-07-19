@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon}) {
       return InputDecoration(
         labelText: labelText,
-        labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+        labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
         floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
         prefixIcon: Icon(prefixIcon, color: AppColors.muted, size: 20),
         filled: true,
@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(height: 12), 
-                        const Text(
+                        Text(
                           'Fintrack',
                           style: TextStyle(
                             fontSize: 30, 
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
+                        Text(
                           'Masuk untuk mulai catat keuanganmu',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                       decoration: fieldDecoration(
                         labelText: 'Email', 
                         prefixIcon: Icons.email_rounded,
@@ -146,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _password,
                       obscureText: true,
-                      style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                       decoration: fieldDecoration(
                         labelText: 'Password', 
                         prefixIcon: Icons.lock_rounded,

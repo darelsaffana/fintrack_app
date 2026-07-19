@@ -24,7 +24,7 @@ class TransactionTile extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Row(
@@ -62,7 +62,7 @@ class TransactionTile extends StatelessWidget {
                         title, 
                         maxLines: 1, 
                         overflow: TextOverflow.ellipsis, 
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.text, 
                           fontWeight: FontWeight.w600, 
                           fontSize: 14,
@@ -91,7 +91,7 @@ class TransactionTile extends StatelessWidget {
                         '${t.category?.name ?? "-"} · $dateStr',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.mutedDim, 
                           fontSize: 12,
                         ),
@@ -106,8 +106,8 @@ class TransactionTile extends StatelessWidget {
                             InkWell(
                               onTap: onEdit,
                               borderRadius: BorderRadius.circular(4),
-                              child: const Padding(
-                                padding: EdgeInsets.all(6),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6),
                                 child: Icon(Icons.edit_outlined, size: 16, color: AppColors.muted),
                               ),
                             ),
@@ -115,8 +115,8 @@ class TransactionTile extends StatelessWidget {
                             InkWell(
                               onTap: onDelete,
                               borderRadius: BorderRadius.circular(4),
-                              child: const Padding(
-                                padding: EdgeInsets.all(6),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6),
                                 child: Icon(Icons.delete_outline, size: 16, color: AppColors.muted),
                               ),
                             ),
