@@ -20,6 +20,9 @@ class AuthProvider extends ChangeNotifier {
   bool uploadingAvatar = false;
 
   Future<void> checkSession() async {
+    // TAMBAHKAN JEDA 5 DETIK DI SINI UNTUK SIMULASI LOADING
+    await Future.delayed(const Duration(seconds: 5));
+
     try {
       final u = await _service.me();
       user = u;

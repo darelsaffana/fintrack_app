@@ -9,14 +9,21 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 48),
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24), // Tambahin horizontal padding biar gak mentok pinggir
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.cardBorder),
       ),
       alignment: Alignment.center,
-      child: Text(message, style: const TextStyle(color: AppColors.mutedDim, fontSize: 13)),
+      child: Text(
+        message, 
+        textAlign: TextAlign.center, // <--- INI BIAR TEKSNYA RATA TENGAH
+        style: const TextStyle(
+          color: AppColors.mutedDim, 
+          fontSize: 14
+        ),
+      ),
     );
   }
 }
