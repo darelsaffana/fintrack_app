@@ -35,7 +35,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Tambah Kategori',
                 style: TextStyle(
                   color: AppColors.text,
@@ -156,7 +156,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
                                     c.name, // Logika asli dipertahankan[cite: 2]
                                     maxLines: 1, 
                                     overflow: TextOverflow.ellipsis, 
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppColors.text, 
                                       fontWeight: FontWeight.bold, // Lebih tebal dan elegan
                                       fontSize: 14,
@@ -165,7 +165,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     '${counts[c.id] ?? 0} transaksi', // Logika asli dipertahankan[cite: 2]
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppColors.mutedDim, 
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w500,
@@ -176,7 +176,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
                             ),
                             // Desain ulang tombol aksi edit & hapus agar lebih minimalis dan bersih
                             IconButton(
-                              icon: const Icon(Icons.edit_outlined, size: 18, color: AppColors.muted), 
+                              icon: Icon(Icons.edit_outlined, size: 18, color: AppColors.muted), 
                               onPressed: () => _openForm(context, existing: c), // Logika asli dipertahankan[cite: 2]
                               visualDensity: VisualDensity.compact,
                               padding: EdgeInsets.zero,
@@ -214,7 +214,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false), 
-            child: const Text('Batal', style: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600)),
+            child: Text('Batal', style: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true), 
@@ -333,7 +333,7 @@ class _CategoryFormState extends State<_CategoryForm> {
               ),
               Text(
                 widget.existing == null ? 'Tambah Kategori' : 'Ubah Kategori', // Logika asli dipertahankan[cite: 2]
-                style: const TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               
@@ -347,10 +347,10 @@ class _CategoryFormState extends State<_CategoryForm> {
               
               TextFormField(
                 controller: _name, // Logika asli dipertahankan[cite: 2]
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Nama Kategori',
-                  labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
                   floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: AppColors.cardBorder.withOpacity(0.15),
@@ -368,7 +368,7 @@ class _CategoryFormState extends State<_CategoryForm> {
               ),
               const SizedBox(height: 18),
               
-              const Text('WARNA KATEGORI', style: TextStyle(color: AppColors.muted, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+              Text('WARNA KATEGORI', style: TextStyle(color: AppColors.muted, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 12, 

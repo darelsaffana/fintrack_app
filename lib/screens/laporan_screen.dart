@@ -24,7 +24,7 @@ class LaporanScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Judul Halaman yang Modern
-          const Text(
+          Text(
             'Analisis Laporan',
             style: TextStyle(
               color: AppColors.text,
@@ -88,7 +88,7 @@ class _CategoryReportCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Gaya teks judul chart diperjelas dan lebih bold
-          const Text(
+          Text(
             'Pengeluaran per Kategori', 
             style: TextStyle(
               color: AppColors.muted, 
@@ -99,8 +99,8 @@ class _CategoryReportCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           if (items.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
               child: Center(child: Text('Belum ada pengeluaran.', style: TextStyle(color: AppColors.mutedDim, fontSize: 13))),
             )
           else ...[
@@ -153,7 +153,7 @@ class _CategoryReportCard extends StatelessWidget {
                         const SizedBox(width: 10),
                         Text(
                           e.name, // Logika asli dipertahankan[cite: 3]
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.text, 
                             fontSize: 13, 
                             fontWeight: FontWeight.w600, // Diubah ke semi-bold
@@ -163,7 +163,7 @@ class _CategoryReportCard extends StatelessWidget {
                     ),
                     Text(
                       '${formatRupiah(e.total)} · ${total > 0 ? ((e.total / total) * 100).round() : 0}%', // Logika asli dipertahankan[cite: 3]
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.muted, 
                         fontSize: 12.5,
                         fontWeight: FontWeight.bold, // Ditebalkan agar angka persentase mudah dibaca
@@ -205,7 +205,7 @@ class _MonthReportCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Pemasukan vs Pengeluaran', 
             style: TextStyle(
               color: AppColors.muted, 
@@ -215,7 +215,7 @@ class _MonthReportCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Laporan perbandingan dalam 6 bulan terakhir',
             style: TextStyle(
               color: AppColors.mutedDim,
@@ -225,8 +225,8 @@ class _MonthReportCard extends StatelessWidget {
           ),
           const SizedBox(height: 28),
           if (items.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
               child: Center(child: Text('Belum ada data bulanan.', style: TextStyle(color: AppColors.mutedDim, fontSize: 13))),
             )
           else
@@ -254,7 +254,7 @@ class _MonthReportCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 8), 
                           child: Text(
                             label, 
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.muted, 
                               fontSize: 10,
                               fontWeight: FontWeight.bold, // Teks bulan sedikit ditebalkan agar lebih bersih terbaca
@@ -334,7 +334,7 @@ class _LegendDot extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label, 
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.text, // Menggunakan warna teks utama agar lebih terbaca
             fontSize: 12, 
             fontWeight: FontWeight.w600,

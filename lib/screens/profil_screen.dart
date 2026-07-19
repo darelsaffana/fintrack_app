@@ -6,6 +6,7 @@ import '../core/api_client.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
 import 'login_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
@@ -145,7 +146,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Profil Saya',
               style: TextStyle(
                 color: AppColors.text,
@@ -199,7 +200,8 @@ class _ProfileSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>(); // Logika asli dipertahankan[cite: 5]
+    final auth = context.watch<AuthProvider>(); // Logika asli dipertahankan
+    final themeProvider = context.watch<ThemeProvider>();
     final user = auth.user;
     final initials = (user?.name.isNotEmpty == true)
         ? user!.name.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0].toUpperCase()).join()
@@ -278,13 +280,13 @@ class _ProfileSummaryCard extends StatelessWidget {
           Text(
             user?.name.isNotEmpty == true ? user!.name : 'Pengguna',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.3),
+            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.3),
           ),
           const SizedBox(height: 4),
           Text(
             user?.email ?? '-',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.muted, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(color: AppColors.muted, fontSize: 13, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
           TextButton(
@@ -296,7 +298,34 @@ class _ProfileSummaryCard extends StatelessWidget {
             ),
             child: const Text('Ubah Foto Profil', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
           ),
-          const Divider(height: 32, color: AppColors.cardBorder),
+          Divider(height: 32, color: AppColors.cardBorder),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    themeProvider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                    size: 20,
+                    color: AppColors.muted,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Mode Gelap',
+                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ],
+              ),
+              Switch(
+                value: themeProvider.isDarkMode,
+                onChanged: (value) {
+                  themeProvider.toggleTheme();
+                },
+                activeColor: AppColors.accent,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onLogout,
             icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.expense),
@@ -347,7 +376,7 @@ class _ProfileFormCard extends StatelessWidget {
       return InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+        labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
         floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
         filled: true,
         fillColor: AppColors.cardBorder.withOpacity(0.15),
@@ -392,14 +421,14 @@ class _ProfileFormCard extends StatelessWidget {
               final sideBySide = c.maxWidth >= 480;
               final nameField = TextFormField(
                 controller: name,
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Nama Lengkap'),
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
               );
               final emailField = TextFormField(
                 controller: email,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Email Aktif'),
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Email wajib diisi' : null,
               );
@@ -416,7 +445,7 @@ class _ProfileFormCard extends StatelessWidget {
             const SizedBox(height: 32),
             const _SectionLabel('GANTI PASSWORD (OPSIONAL)'),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Kosongkan kolom di bawah ini jika kamu tidak ingin melakukan perubahan password.',
               style: TextStyle(color: AppColors.muted, fontSize: 12, height: 1.4),
             ),
@@ -424,7 +453,7 @@ class _ProfileFormCard extends StatelessWidget {
             TextFormField(
               controller: currentPassword,
               obscureText: true,
-              style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+              style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
               decoration: fieldDecoration(labelText: 'Password Saat Ini'),
               validator: (v) {
                 if (newPassword.text.isEmpty) return null;
@@ -437,7 +466,7 @@ class _ProfileFormCard extends StatelessWidget {
               final newPassField = TextFormField(
                 controller: newPassword,
                 obscureText: true,
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Password Baru'),
                 validator: (v) {
                   if (v == null || v.isEmpty) return null;
@@ -447,7 +476,7 @@ class _ProfileFormCard extends StatelessWidget {
               final confirmField = TextFormField(
                 controller: confirmPassword,
                 obscureText: true,
-                style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Konfirmasi Password Baru'),
                 validator: (v) {
                   if (newPassword.text.isEmpty) return null;
