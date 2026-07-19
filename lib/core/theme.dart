@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 /// Central color tokens — mirrors the dark navy Fintrack palette used
 /// across dashboard cards, sidebar, and charts.
 class AppColors {
-  static const bgApp = Color(0xFF0D1326);
-  static const sidebar = Color(0xFF080C18);
-  static const card = Color(0xFF131A2E);
-  static const cardBorder = Color(0xFF1E2740);
-  static const border = Color(0xFF1C243A);
-  static const text = Color(0xFFE7EBF3);
-  static const muted = Color(0xFF7D8AA8);
-  static const mutedDim = Color(0xFF4B5773);
+  static bool isDark = true;
+
+  static Color get bgApp => isDark ? const Color(0xFF0D1326) : const Color(0xFFF4F6FA);
+  static Color get sidebar => isDark ? const Color(0xFF080C18) : const Color(0xFFFFFFFF);
+  static Color get card => isDark ? const Color(0xFF131A2E) : const Color(0xFFFFFFFF);
+  static Color get cardBorder => isDark ? const Color(0xFF1E2740) : const Color(0xFFE2E8F0);
+  static Color get border => isDark ? const Color(0xFF1C243A) : const Color(0xFFE2E8F0);
+  static Color get text => isDark ? const Color(0xFFE7EBF3) : const Color(0xFF1E293B);
+  static Color get muted => isDark ? const Color(0xFF7D8AA8) : const Color(0xFF64748B);
+  static Color get mutedDim => isDark ? const Color(0xFF4B5773) : const Color(0xFF94A3B8);
 
   static const income = Color(0xFF3DDC97);
   static const expense = Color(0xFFFF6B8A);
@@ -30,12 +32,14 @@ class AppColors {
 }
 
 ThemeData buildAppTheme() {
-  final base = ThemeData.dark(useMaterial3: true);
+  final isDark = AppColors.isDark;
+  final base = isDark ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true);
   return base.copyWith(
     scaffoldBackgroundColor: AppColors.bgApp,
     colorScheme: base.colorScheme.copyWith(
       primary: AppColors.accent,
       surface: AppColors.card,
+      onSurface: AppColors.text,
     ),
     textTheme: base.textTheme.apply(
       bodyColor: AppColors.text,
@@ -43,20 +47,22 @@ ThemeData buildAppTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.bgApp,
+      fillColor: isDark ? AppColors.bgApp : Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: AppColors.accent),
       ),
+      labelStyle: TextStyle(color: AppColors.muted),
+      hintStyle: TextStyle(color: AppColors.mutedDim),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -68,7 +74,7 @@ ThemeData buildAppTheme() {
     ),
     cardColor: AppColors.card,
     dividerColor: AppColors.border,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgApp,
       foregroundColor: AppColors.text,
       elevation: 0,
