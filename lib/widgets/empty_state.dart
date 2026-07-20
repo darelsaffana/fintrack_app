@@ -19,7 +19,7 @@ class EmptyState extends StatelessWidget {
       child: Text(
         message, 
         textAlign: TextAlign.center, // <--- INI BIAR TEKSNYA RATA TENGAH
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.mutedDim, 
           fontSize: 14
         ),

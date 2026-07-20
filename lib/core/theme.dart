@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 /// Central color tokens — updated to a light theme with deep purple accents 
 /// based on the provided reference design.
 class AppColors {
-  static const bgApp = Color(0xFFF4F6FB); // Very light greyish blue background
-  static const sidebar = Color(0xFFFFFFFF);
-  static const card = Color(0xFFFFFFFF);
-  static const cardBorder = Color(0xFFE5E7EB);
-  static const border = Color(0xFFE5E7EB);
-  static const text = Color(0xFF111827); // Very dark gray for contrast
-  static const muted = Color(0xFF6B7280);
-  static const mutedDim = Color(0xFF9CA3AF);
+  static bool isDark = false;
+
+  static Color get bgApp => isDark ? const Color(0xFF0D1326) : const Color(0xFFF4F6FB);
+  static Color get sidebar => isDark ? const Color(0xFF080C18) : const Color(0xFFFFFFFF);
+  static Color get card => isDark ? const Color(0xFF131A2E) : const Color(0xFFFFFFFF);
+  static Color get cardBorder => isDark ? const Color(0xFF1E2740) : const Color(0xFFE5E7EB);
+  static Color get border => isDark ? const Color(0xFF1C243A) : const Color(0xFFE5E7EB);
+  static Color get text => isDark ? const Color(0xFFE7EBF3) : const Color(0xFF111827);
+  static Color get muted => isDark ? const Color(0xFF7D8AA8) : const Color(0xFF6B7280);
+  static Color get mutedDim => isDark ? const Color(0xFF4B5773) : const Color(0xFF9CA3AF);
 
   static const income = Color(0xFF10B981); // Green
   static const expense = Color(0xFFF43F5E); // Red
@@ -31,7 +33,8 @@ class AppColors {
 }
 
 ThemeData buildAppTheme() {
-  final base = ThemeData.light(useMaterial3: true);
+  final isDark = AppColors.isDark;
+  final base = isDark ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true);
   return base.copyWith(
     scaffoldBackgroundColor: AppColors.bgApp,
     colorScheme: base.colorScheme.copyWith(
@@ -45,20 +48,22 @@ ThemeData buildAppTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.bgApp,
+      fillColor: isDark ? AppColors.bgApp : Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: AppColors.accent),
       ),
+      labelStyle: TextStyle(color: AppColors.muted),
+      hintStyle: TextStyle(color: AppColors.mutedDim),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -70,7 +75,7 @@ ThemeData buildAppTheme() {
     ),
     cardColor: AppColors.card,
     dividerColor: AppColors.border,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgApp,
       foregroundColor: AppColors.text,
       elevation: 0,
