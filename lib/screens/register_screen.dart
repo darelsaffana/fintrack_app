@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon}) {
       return InputDecoration(
         labelText: labelText,
-        labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+        labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
         floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
         prefixIcon: Icon(prefixIcon, color: AppColors.muted, size: 20),
         filled: true,
@@ -93,12 +93,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // JUDUL HALAMAN
-                          const Text(
+                          Text(
                             'Daftar Akun',
                             style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.text, letterSpacing: -0.5),
                           ),
                           const SizedBox(height: 6),
-                          const Text(
+                          Text(
                             'Buat akun barumu untuk mulai mengatur finansial yang lebih baik',
                             style: TextStyle(color: AppColors.muted, fontSize: 14, fontWeight: FontWeight.w500),
                           ),
@@ -107,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // INPUT FIELDS (NAMA, EMAIL, PASSWORD, CONFIRM)
                           TextFormField(
                             controller: _name,
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Nama Lengkap', prefixIcon: Icons.person_rounded),
                             validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
                           ),
@@ -115,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Email', prefixIcon: Icons.email_rounded),
                             validator: (v) => (v == null || v.trim().isEmpty) ? 'Email wajib diisi' : null,
                           ),
@@ -123,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _password,
                             obscureText: true,
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Password', prefixIcon: Icons.lock_rounded),
                             validator: (v) => (v == null || v.length < 6) ? 'Minimal 6 karakter' : null,
                           ),
@@ -131,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _confirm,
                             obscureText: true,
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Konfirmasi Password', prefixIcon: Icons.lock_clock_rounded),
                             validator: (v) => (v != _password.text) ? 'Konfirmasi tidak cocok' : null,
                           ),
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               left: 16,
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.text),
+                icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.text),
                 style: IconButton.styleFrom(
                   backgroundColor: AppColors.card,
                   padding: const EdgeInsets.all(12),
