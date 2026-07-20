@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 
-/// Central color tokens — mirrors the dark navy Fintrack palette used
-/// across dashboard cards, sidebar, and charts.
+/// Central color tokens — updated to a light theme with deep purple accents 
+/// based on the provided reference design.
 class AppColors {
-  static bool isDark = true;
+  static bool isDark = false;
 
-  static Color get bgApp => isDark ? const Color(0xFF0D1326) : const Color(0xFFF4F6FA);
+  static Color get bgApp => isDark ? const Color(0xFF0D1326) : const Color(0xFFF4F6FB);
   static Color get sidebar => isDark ? const Color(0xFF080C18) : const Color(0xFFFFFFFF);
   static Color get card => isDark ? const Color(0xFF131A2E) : const Color(0xFFFFFFFF);
-  static Color get cardBorder => isDark ? const Color(0xFF1E2740) : const Color(0xFFE2E8F0);
-  static Color get border => isDark ? const Color(0xFF1C243A) : const Color(0xFFE2E8F0);
-  static Color get text => isDark ? const Color(0xFFE7EBF3) : const Color(0xFF1E293B);
-  static Color get muted => isDark ? const Color(0xFF7D8AA8) : const Color(0xFF64748B);
-  static Color get mutedDim => isDark ? const Color(0xFF4B5773) : const Color(0xFF94A3B8);
+  static Color get cardBorder => isDark ? const Color(0xFF1E2740) : const Color(0xFFE5E7EB);
+  static Color get border => isDark ? const Color(0xFF1C243A) : const Color(0xFFE5E7EB);
+  static Color get text => isDark ? const Color(0xFFE7EBF3) : const Color(0xFF111827);
+  static Color get muted => isDark ? const Color(0xFF7D8AA8) : const Color(0xFF6B7280);
+  static Color get mutedDim => isDark ? const Color(0xFF4B5773) : const Color(0xFF9CA3AF);
 
-  static const income = Color(0xFF3DDC97);
-  static const expense = Color(0xFFFF6B8A);
-  static const balance = Color(0xFF4FC3F7);
-  static const accent = Color(0xFF8B7CF6);
+  static const income = Color(0xFF10B981); // Green
+  static const expense = Color(0xFFF43F5E); // Red
+  static const balance = Color(0xFF3B82F6); // Blue
+  static const accent = Color(0xFF4A00E0); // Deep Purple
+  static const accentSecondary = Color(0xFF8E24AA); // Light Purple
 
   static const categoryPalette = <Color>[
-    Color(0xFF3DDC97),
-    Color(0xFF4FC3F7),
-    Color(0xFF8B7CF6),
-    Color(0xFFFF6B8A),
-    Color(0xFFFFB84F),
-    Color(0xFF4FD1C5),
-    Color(0xFFF472B6),
-    Color(0xFFFACC15),
+    Color(0xFF4A00E0),
+    Color(0xFF8E24AA),
+    Color(0xFF3B82F6),
+    Color(0xFF10B981),
+    Color(0xFFF59E0B),
+    Color(0xFFF43F5E),
+    Color(0xFF14B8A6),
+    Color(0xFFEC4899),
   ];
 }
 
