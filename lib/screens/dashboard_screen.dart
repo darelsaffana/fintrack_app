@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
+import '../providers/auth_provider.dart'; // Tambahkan import auth
 import '../widgets/empty_state.dart';
-import '../widgets/summary_card.dart';
 import '../widgets/transaction_tile.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -11,99 +11,236 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>(); // Logika asli dipertahankan[cite: 4]
-    final summary = provider.summary; // Logika asli dipertahankan[cite: 4]
+    final provider = context.watch<AppProvider>(); 
+    final summary = provider.summary; 
+    
+    // Ambil data user
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user;
+    final initials = (user?.name.isNotEmpty == true)
+        ? user!.name.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0].toUpperCase()).join()
+        : 'P';
+
+    // Helper untuk image
+    ImageProvider? getAvatarImage() {
+      if (auth.avatarPreview != null) return MemoryImage(auth.avatarPreview!);
+      if (user?.avatarUrl != null) return NetworkImage(user!.avatarUrl!);
+      return null;
+    }
 
     return RefreshIndicator(
-      onRefresh: () => provider.loadAll(), // Logika asli dipertahankan[cite: 4]
+      onRefresh: () => provider.loadAll(), 
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(), // Logika asli dipertahankan[cite: 4]
-        // Menambahkan padding luar (24) agar layout halaman terasa lebih bernapas dan modern
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        physics: const AlwaysScrollableScrollPhysics(),
+        // Tidak perlu padding horizontal di root karena kita atur di dalam
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            LayoutBuilder(builder: (context, constraints) {
-              final isNarrow = constraints.maxWidth < 560; // Logika asli dipertahankan[cite: 4]
-              final cards = [
-                SummaryCard(label: 'PEMASUKAN', value: summary?.income ?? 0, color: AppColors.income, icon: Icons.arrow_upward_rounded), // Logika asli[cite: 4]
-                SummaryCard(label: 'PENGELUARAN', value: summary?.expense ?? 0, color: AppColors.expense, icon: Icons.arrow_downward_rounded), // Logika asli[cite: 4]
-                SummaryCard(label: 'SALDO', value: summary?.balance ?? 0, color: AppColors.balance, icon: Icons.account_balance_wallet_rounded), // Logika asli[cite: 4]
-              ];
-              
-              if (isNarrow) {
-                // Menambahkan jarak vertikal antarkartu yang lebih modern (16)
-                return Column(
-                  children: [
-                    for (final c in cards) 
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16), 
-                        child: c,
-                      )
-                  ],
-                );
-              }
-              return Row(
-                children: [
-                  for (int i = 0; i < cards.length; i++) ...[
-                    // Jarak horizontal antarkartu dilebarkan sedikit agar lebih proporsional
-                    if (i > 0) const SizedBox(width: 16),
-                    Expanded(child: cards[i]),
-                  ],
-                ],
-              );
-            }),
-            // Menambah white space/jarak vertikal agar tidak berdempetan
+            // HEADER SALDO (UNGU) DAN KARTU OVERLAP
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // BLOK UNGU
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 50), // Ruang untuk kartu overlap
+                  padding: const EdgeInsets.fromLTRB(24, 40, 24, 120), // Padding bawah diperbesar agar teks tidak tertutup
+                  decoration: BoxDecoration(
+                    color: AppColors.accent, // Warna deep purple
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(40), // Hanya radius bawah agar rata atas
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accent.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // FOTO PROFIL DI TENGAH (Sesuai Desain: Lingkaran polos tanpa ring/efek bertumpuk)
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.white, // Background putih utuh agar icon transparan terlihat jelas
+                        backgroundImage: getAvatarImage(),
+                        child: getAvatarImage() == null
+                            ? Text(initials, style: const TextStyle(color: AppColors.accent, fontSize: 24, fontWeight: FontWeight.bold))
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Total Saldo',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        formatRupiah(summary?.balance ?? 0),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 40, // Sedikit dibesarkan
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis, // Agar tidak error jika angkanya sangat panjang
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // KARTU OVERLAP (PEMASUKAN & PENGELUARAN)
+                Positioned(
+                  bottom: 0,
+                  left: 24,
+                  right: 24,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 24,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildQuickAction(
+                            title: 'Pemasukan',
+                            amount: summary?.income ?? 0,
+                            icon: Icons.arrow_downward_rounded,
+                            color: AppColors.income,
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 48,
+                          color: AppColors.border,
+                        ),
+                        Expanded(
+                          child: _buildQuickAction(
+                            title: 'Pengeluaran',
+                            amount: summary?.expense ?? 0,
+                            icon: Icons.arrow_upward_rounded,
+                            color: AppColors.expense,
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 48,
+                          color: AppColors.border,
+                        ),
+                        Expanded(
+                          child: _buildQuickAction(
+                            title: 'Saldo',
+                            amount: summary?.balance ?? 0,
+                            icon: Icons.account_balance_wallet_rounded,
+                            color: AppColors.balance, // Menggunakan warna biru
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
             const SizedBox(height: 32),
             
-            // Mengubah style teks judul "Transaksi Terakhir" menjadi lebih bold, sedikit besar, dan modern
-            Text(
-              'Transaksi Terakhir', 
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.6) ?? AppColors.muted, 
-                fontWeight: FontWeight.w800, // Lebih tebal
-                fontSize: 15, // Sedikit dinaikkan ukurannya agar tegas
-                letterSpacing: 0.5, // Menambahkan jarak antarhuruf ala UI modern
-              )
+            // TRANSAKSI TERAKHIR
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Transaksi Terakhir', 
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge?.color, 
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  letterSpacing: -0.3,
+                )
+              ),
             ),
-            const SizedBox(height: 16), // Jarak ke list di bawahnya diperluas
+            const SizedBox(height: 12),
             
             if (summary == null || summary.recentTransactions.isEmpty)
-              const EmptyState(message: 'Belum ada transaksi. Mulai catat keuanganmu!') // Logika asli dipertahankan[cite: 4]
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: EmptyState(message: 'Belum ada transaksi. Mulai catat keuanganmu!'),
+              )
             else
-              // Mengubah kontainer pembungkus daftar transaksi menjadi lebih lembut & elegan
-              Container(
-                decoration: BoxDecoration(
-                  // ================= INI YANG GUA UBAH BIAR DINAMIS =================
-                  color: Theme.of(context).cardColor, 
-                  borderRadius: BorderRadius.circular(24), // Sudut melengkung diubah dari 16 ke 24 agar terlihat halus[cite: 4]
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor, // Mengikuti border tema aktif
-                    width: 1,
-                  ),
-                  // =================================================================
-                  // Menambahkan bayangan (shadow) halus yang memberikan efek kedalaman (depth) modern
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor, 
+                    borderRadius: BorderRadius.circular(24), 
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor, 
+                      width: 1,
                     ),
-                  ],
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  children: [
-                    for (final t in summary.recentTransactions) ...[
-                      TransactionTile(transaction: t), // Logika asli[cite: 4]
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      for (final t in summary.recentTransactions) ...[
+                        TransactionTile(transaction: t),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            const SizedBox(height: 32),
+              
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
-}
+
+  Widget _buildQuickAction({required String title, required num amount, required IconData icon, required Color color}) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 24), // Ukuran icon sedikit dikecilkan
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            color: AppColors.muted,
+            fontSize: 12, // Font size dikecilkan agar muat 3 item
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          formatRupiah(amount),
+          style: const TextStyle(
+            color: AppColors.text,
+            fontSize: 13, // Font size nominal dikecilkan agar tidak terpotong
+            fontWeight: FontWeight.w800,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}

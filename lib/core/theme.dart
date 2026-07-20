@@ -1,41 +1,43 @@
 import 'package:flutter/material.dart';
 
-/// Central color tokens — mirrors the dark navy Fintrack palette used
-/// across dashboard cards, sidebar, and charts.
+/// Central color tokens — updated to a light theme with deep purple accents 
+/// based on the provided reference design.
 class AppColors {
-  static const bgApp = Color(0xFF0D1326);
-  static const sidebar = Color(0xFF080C18);
-  static const card = Color(0xFF131A2E);
-  static const cardBorder = Color(0xFF1E2740);
-  static const border = Color(0xFF1C243A);
-  static const text = Color(0xFFE7EBF3);
-  static const muted = Color(0xFF7D8AA8);
-  static const mutedDim = Color(0xFF4B5773);
+  static const bgApp = Color(0xFFF4F6FB); // Very light greyish blue background
+  static const sidebar = Color(0xFFFFFFFF);
+  static const card = Color(0xFFFFFFFF);
+  static const cardBorder = Color(0xFFE5E7EB);
+  static const border = Color(0xFFE5E7EB);
+  static const text = Color(0xFF111827); // Very dark gray for contrast
+  static const muted = Color(0xFF6B7280);
+  static const mutedDim = Color(0xFF9CA3AF);
 
-  static const income = Color(0xFF3DDC97);
-  static const expense = Color(0xFFFF6B8A);
-  static const balance = Color(0xFF4FC3F7);
-  static const accent = Color(0xFF8B7CF6);
+  static const income = Color(0xFF10B981); // Green
+  static const expense = Color(0xFFF43F5E); // Red
+  static const balance = Color(0xFF3B82F6); // Blue
+  static const accent = Color(0xFF4A00E0); // Deep Purple
+  static const accentSecondary = Color(0xFF8E24AA); // Light Purple
 
   static const categoryPalette = <Color>[
-    Color(0xFF3DDC97),
-    Color(0xFF4FC3F7),
-    Color(0xFF8B7CF6),
-    Color(0xFFFF6B8A),
-    Color(0xFFFFB84F),
-    Color(0xFF4FD1C5),
-    Color(0xFFF472B6),
-    Color(0xFFFACC15),
+    Color(0xFF4A00E0),
+    Color(0xFF8E24AA),
+    Color(0xFF3B82F6),
+    Color(0xFF10B981),
+    Color(0xFFF59E0B),
+    Color(0xFFF43F5E),
+    Color(0xFF14B8A6),
+    Color(0xFFEC4899),
   ];
 }
 
 ThemeData buildAppTheme() {
-  final base = ThemeData.dark(useMaterial3: true);
+  final base = ThemeData.light(useMaterial3: true);
   return base.copyWith(
     scaffoldBackgroundColor: AppColors.bgApp,
     colorScheme: base.colorScheme.copyWith(
       primary: AppColors.accent,
       surface: AppColors.card,
+      onSurface: AppColors.text,
     ),
     textTheme: base.textTheme.apply(
       bodyColor: AppColors.text,

@@ -66,22 +66,23 @@ if (isWide) {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Header desktop yang elegan
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 28),
-                    child: Text(
-                      _titles[_index],
-                      style: const TextStyle(
-                        fontSize: 28, 
-                        fontWeight: FontWeight.w900, 
-                        color: AppColors.text,
-                        letterSpacing: -0.5,
+                  // Header desktop (hanya tampil jika bukan Dashboard)
+                  if (_index != 0)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 28),
+                      child: Text(
+                        _titles[_index],
+                        style: const TextStyle(
+                          fontSize: 28, 
+                          fontWeight: FontWeight.w900, 
+                          color: AppColors.text,
+                          letterSpacing: -0.5,
+                        ),
                       ),
                     ),
-                  ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      padding: _index != 0 ? const EdgeInsets.symmetric(horizontal: 40) : EdgeInsets.zero,
                       child: body,
                     ),
                   ),
@@ -95,58 +96,67 @@ if (isWide) {
 
 // TAMPILAN MOBILE (Narrow Screens)
     return Scaffold(
-      // Kita hapus juga di sini agar warna latar belakang kembali normal
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Custom Header Mobile yang menyatu indah tanpa AppBar kaku
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-              child: Text(
-                _titles[_index],
-                style: const TextStyle(
-                  fontSize: 26, 
-                  fontWeight: FontWeight.w900, 
-                  color: AppColors.text,
-                  letterSpacing: -0.5,
+            // Custom Header Mobile (hanya tampil jika bukan Dashboard)
+            if (_index != 0)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                child: Text(
+                  _titles[_index],
+                  style: const TextStyle(
+                    fontSize: 26, 
+                    fontWeight: FontWeight.w900, 
+                    color: AppColors.text,
+                    letterSpacing: -0.5,
+                  ),
                 ),
               ),
-            ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: _index != 0 ? const EdgeInsets.symmetric(horizontal: 16, vertical: 8) : EdgeInsets.zero,
                 child: body,
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: AppColors.cardBorder.withOpacity(0.4),
-              width: 1,
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(40),
+            child: NavigationBar(
+              selectedIndex: _index,
+              onDestinationSelected: (i) => setState(() => _index = i),
+              backgroundColor: Colors.white,
+              elevation: 0,
+              height: 64, // Lebih ramping
+              indicatorColor: AppColors.accent.withOpacity(0.15),
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide, // Menyembunyikan teks label seperti desain
+              destinations: [
+                for (final d in _destinations)
+                  NavigationDestination(
+                    icon: Icon(d.icon, color: AppColors.muted, size: 24),
+                    selectedIcon: Icon(d.icon, color: AppColors.accent, size: 24),
+                    label: d.label,
+                  ),
+              ],
             ),
           ),
-        ),
-        child: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: (i) => setState(() => _index = i),
-          backgroundColor: AppColors.sidebar,
-          elevation: 0,
-          height: 68,
-          indicatorColor: AppColors.accent.withOpacity(0.12),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: [
-            for (final d in _destinations)
-              NavigationDestination(
-                icon: Icon(d.icon, color: AppColors.muted, size: 22),
-                selectedIcon: Icon(d.icon, color: AppColors.accent, size: 24),
-                label: d.label,
-              ),
-          ],
         ),
       ),
     );
