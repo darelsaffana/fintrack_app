@@ -146,12 +146,12 @@ class _ProfilScreenState extends State<ProfilScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Profil Saya',
+            const Text(
+              'Profil',
               style: TextStyle(
                 color: AppColors.text,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
               ),
             ),
@@ -212,7 +212,6 @@ class _ProfileSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.01),
@@ -401,7 +400,6 @@ class _ProfileFormCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.01),

@@ -63,30 +63,7 @@ if (isWide) {
           children: [
             _Sidebar(index: _index, onSelect: (i) => setState(() => _index = i)),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Header desktop (hanya tampil jika bukan Dashboard)
-                  if (_index != 0)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 28),
-                      child: Text(
-                        _titles[_index],
-                        style: TextStyle(
-                          fontSize: 28, 
-                          fontWeight: FontWeight.w900, 
-                          color: AppColors.text,
-                          letterSpacing: -0.5,
-                      ),
-                    ),
-                  Expanded(
-                    child: Padding(
-                      padding: _index != 0 ? const EdgeInsets.symmetric(horizontal: 40) : EdgeInsets.zero,
-                      child: body,
-                    ),
-                  ),
-                ],
-              ),
+              child: body,
             ),
           ],
         ),
@@ -96,30 +73,7 @@ if (isWide) {
 // TAMPILAN MOBILE (Narrow Screens)
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Custom Header Mobile (hanya tampil jika bukan Dashboard)
-            if (_index != 0)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-                child: Text(
-                  _titles[_index],
-                  style: TextStyle(
-                    fontSize: 26, 
-                    fontWeight: FontWeight.w900, 
-                    color: AppColors.text,
-                    letterSpacing: -0.5,
-                ),
-              ),
-            Expanded(
-              child: Padding(
-                padding: _index != 0 ? const EdgeInsets.symmetric(horizontal: 16, vertical: 8) : EdgeInsets.zero,
-                child: body,
-              ),
-            ),
-          ],
-        ),
+        child: body,
       ),
       bottomNavigationBar: SafeArea(
         child: Container(

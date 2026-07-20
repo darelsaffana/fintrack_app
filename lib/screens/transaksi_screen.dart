@@ -33,30 +33,21 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Tambah Transaksi',
+              const Text(
+                'Transaksi',
                 style: TextStyle(
                   color: AppColors.text,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
                 ),
               ),
-              ElevatedButton.icon(
+              IconButton.filled(
                 onPressed: () => _openForm(context), // Logika asli dipertahankan
-                icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
-                label: const Text(
-                  'Tambah',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-                style: ElevatedButton.styleFrom(
+                icon: const Icon(Icons.add_rounded, size: 26, color: Colors.white),
+                style: IconButton.styleFrom(
                   backgroundColor: AppColors.accent,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: const EdgeInsets.all(16),
                 ),
               ),
             ],
@@ -67,9 +58,8 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.card.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+              color: AppColors.cardBorder.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(100),
             ),
             child: Row(
               children: [
@@ -108,7 +98,6 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.card,
                       borderRadius: BorderRadius.circular(24), // Sudut melengkung 24 agar senada
-                      border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.02),
@@ -189,12 +178,12 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(100),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: selected ? AppColors.accent : Colors.transparent,
-          borderRadius: BorderRadius.circular(11),
+          borderRadius: BorderRadius.circular(100),
           boxShadow: selected
               ? [
                   BoxShadow(

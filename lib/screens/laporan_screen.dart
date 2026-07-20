@@ -23,13 +23,12 @@ class LaporanScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Judul Halaman yang Modern
-          Text(
-            'Analisis Laporan',
+          const Text(
+            'Laporan',
             style: TextStyle(
               color: AppColors.text,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
               letterSpacing: -0.5,
             ),
           ),
@@ -75,7 +74,6 @@ class _CategoryReportCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card, 
         borderRadius: BorderRadius.circular(24), // Sudut melengkung 24 yang modern
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)), // Border diperhalus
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
@@ -193,7 +191,6 @@ class _MonthReportCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card, 
         borderRadius: BorderRadius.circular(24), // Sudut melengkung 24
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
