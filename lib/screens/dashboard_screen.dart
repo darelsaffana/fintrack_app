@@ -184,10 +184,6 @@ class DashboardScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor, 
                     borderRadius: BorderRadius.circular(24), 
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor, 
-                      width: 1,
-                    ),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Column(
