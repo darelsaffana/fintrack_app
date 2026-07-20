@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'core/theme.dart'; // Membaca file theme Anda untuk mengambil AppColors
 import 'providers/app_provider.dart';
 import 'providers/auth_provider.dart';
-import 'providers/theme_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
 
@@ -25,17 +24,12 @@ class FintrackApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()..checkSession()),
         ChangeNotifierProvider(create: (_) => AppProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return MaterialApp(
-            title: 'Fintrack',
-            debugShowCheckedModeBanner: false,
-            theme: buildAppTheme(),
-            home: const _RootGate(),
-          );
-        },
+      child: MaterialApp(
+        title: 'Fintrack',
+        debugShowCheckedModeBanner: false,
+        theme: buildAppTheme(),
+        home: const _RootGate(),
       ),
     );
   }

@@ -6,7 +6,6 @@ import '../core/api_client.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import 'login_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
@@ -201,7 +200,6 @@ class _ProfileSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>(); // Logika asli dipertahankan
-    final themeProvider = context.watch<ThemeProvider>();
     final user = auth.user;
     final initials = (user?.name.isNotEmpty == true)
         ? user!.name.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0].toUpperCase()).join()
@@ -296,33 +294,6 @@ class _ProfileSummaryCard extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Ubah Foto Profil', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-          ),
-          Divider(height: 32, color: AppColors.cardBorder),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    themeProvider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                    size: 20,
-                    color: AppColors.muted,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Mode Gelap',
-                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                ],
-              ),
-              Switch(
-                value: themeProvider.isDarkMode,
-                onChanged: (value) {
-                  themeProvider.toggleTheme();
-                },
-                activeColor: AppColors.accent,
-              ),
-            ],
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
