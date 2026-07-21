@@ -30,11 +30,11 @@ flutter:
     - assets/images/LogoFintrack.png
 
 flutter_native_splash:
-  color: "#131a2e"
+  color: "#ffffff"
   image: assets/images/LogoFintrack.png
   
   android_12:
-    color: "#131a2e"
+    color: "#ffffff"
     image: assets/images/LogoFintrack.png
     
   android_gravity: center
@@ -45,5 +45,5 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/images/icon.png"
-  adaptive_icon_background: "#131a2e"
+  adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/images/icon.png"
