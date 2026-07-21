@@ -21,6 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirm = TextEditingController();
   bool _loading = false;
   String? _error;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -44,13 +46,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 @override
   Widget build(BuildContext context) {
-    // Style dekorasi Input (Tetap sama seperti kode asli Anda)
-    InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon}) {
+    // Style dekorasi Input
+    InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon, Widget? suffixIcon}) {
       return InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+        labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
         floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
         prefixIcon: Icon(prefixIcon, color: AppColors.muted, size: 20),
+        suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.cardBorder.withOpacity(0.15),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -107,7 +110,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // INPUT FIELDS (NAMA, EMAIL, PASSWORD, CONFIRM)
                           TextFormField(
                             controller: _name,
-                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Nama Lengkap', prefixIcon: Icons.person_rounded),
                             validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
                           ),
@@ -115,7 +120,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
-                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            textInputAction: TextInputAction.next,
+                            autofillHints: const [AutofillHints.email],
+                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Email', prefixIcon: Icons.email_rounded),
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) return 'Email wajib diisi';
@@ -128,33 +135,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _password,
-                            obscureText: true,
-                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
-                            decoration: fieldDecoration(labelText: 'Password', prefixIcon: Icons.lock_rounded),
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.next,
+                            autofillHints: const [AutofillHints.newPassword],
+                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            decoration: fieldDecoration(
+                              labelText: 'Password', 
+                              prefixIcon: Icons.lock_rounded,
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted, size: 20),
+                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              ),
+                            ),
                             validator: (v) => (v == null || v.length < 6) ? 'Minimal 6 karakter' : null,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _confirm,
-                            obscureText: true,
-                            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
-                            decoration: fieldDecoration(labelText: 'Konfirmasi Password', prefixIcon: Icons.lock_clock_rounded),
+                            obscureText: _obscureConfirm,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) => _submit(),
+                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            decoration: fieldDecoration(
+                              labelText: 'Konfirmasi Password', 
+                              prefixIcon: Icons.lock_clock_rounded,
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscureConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted, size: 20),
+                                onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                              ),
+                            ),
                             validator: (v) => (v != _password.text) ? 'Konfirmasi tidak cocok' : null,
                           ),
 
-                          // BOX ERROR[cite: 2]
-                          if (_error != null) ...[
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: AppColors.expense.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: AppColors.expense.withOpacity(0.2)),
-                              ),
-                              child: Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13, fontWeight: FontWeight.bold)),
-                            ),
-                          ],
+                          // BOX ERROR ANIMATED
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeOutBack,
+                            child: _error == null
+                                ? const SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.only(top: 16),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.expense.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: AppColors.expense.withOpacity(0.2)),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(Icons.error_outline_rounded, color: AppColors.expense, size: 20),
+                                          const SizedBox(width: 10),
+                                          Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13, fontWeight: FontWeight.bold))),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                          ),
 
                           const SizedBox(height: 28),
 
@@ -180,7 +217,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
 
-            // 2. TOMBOL BACK CUSTOM (DIPOSISIKAN MENAMBANG DI KIRI ATAS)
+            // 2. TEKS SYARAT & KETENTUAN
+            Positioned(
+              bottom: 24,
+              left: 24,
+              right: 24,
+              child: Text.rich(
+                const TextSpan(
+                  text: 'Dengan mendaftar, Anda menyetujui\n',
+                  children: [
+                    TextSpan(text: 'Syarat & Ketentuan', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold)),
+                    TextSpan(text: ' serta '),
+                    TextSpan(text: 'Kebijakan Privasi', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold)),
+                    TextSpan(text: ' kami.'),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.muted, fontSize: 12, height: 1.5),
+              ),
+            ),
+
+            // 3. TOMBOL BACK CUSTOM
             Positioned(
               top: 16,
               left: 16,
