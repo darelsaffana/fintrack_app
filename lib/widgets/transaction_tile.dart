@@ -88,7 +88,7 @@ class TransactionTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${t.category?.name ?? "-"} Â· $dateStr',
+                        '${t.category?.name ?? "-"} • $dateStr',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

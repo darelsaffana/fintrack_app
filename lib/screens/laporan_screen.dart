@@ -160,7 +160,7 @@ class _CategoryReportCard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '${formatRupiah(e.total)} Ã‚Â· ${total > 0 ? ((e.total / total) * 100).round() : 0}%', // Logika asli dipertahankan[cite: 3]
+                      '${formatRupiah(e.total)} • ${total > 0 ? ((e.total / total) * 100).round() : 0}%',
                       style: TextStyle(
                         color: AppColors.muted(context), 
                         fontSize: 12.5,

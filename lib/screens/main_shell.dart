@@ -226,7 +226,7 @@ class _Sidebar extends StatelessWidget {
                     color: AppColors.mutedDim(context).withOpacity(0.6)),
                 const SizedBox(width: 6),
                 Text(
-                  'Fintrack Ã‚Â· v1.0',
+                  'Fintrack • v1.0',
                   style: TextStyle(
                     color: AppColors.mutedDim(context),
                     fontSize: 11,
