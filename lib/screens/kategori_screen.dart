@@ -377,10 +377,10 @@ class _CategoryFormState extends State<_CategoryForm> {
                         decoration: BoxDecoration(
                           color: c, 
                           shape: BoxShape.circle,
-                          boxShadow: _color.value == c.value 
+                          boxShadow: _color!.value == c.value 
                               ? [BoxShadow(color: c.withOpacity(0.4), blurRadius: 6, offset: const Offset(0, 3))]
                               : null,
-                          border: _color.value == c.value 
+                          border: _color!.value == c.value 
                               ? Border.all(color: Colors.white, width: 2.5) 
                               : null,
                         ),
@@ -471,9 +471,9 @@ class _CategoryFormState extends State<_CategoryForm> {
     try {
       final provider = context.read<AppProvider>(); // Logika asli dipertahankan[cite: 2]
       if (widget.existing == null) {
-        await provider.addCategory(_name.text.trim(), _type, _colorToHex(_color)); // Logika asli dipertahankan[cite: 2]
+        await provider.addCategory(_name.text.trim(), _type, _colorToHex(_color!)); // Logika asli dipertahankan[cite: 2]
       } else {
-        await provider.editCategory(widget.existing!.id, _name.text.trim(), _type, _colorToHex(_color)); // Logika asli dipertahankan[cite: 2]
+        await provider.editCategory(widget.existing!.id, _name.text.trim(), _type, _colorToHex(_color!)); // Logika asli dipertahankan[cite: 2]
       }
       if (mounted) Navigator.pop(context); // Logika asli dipertahankan[cite: 2]
     } catch (e) {
