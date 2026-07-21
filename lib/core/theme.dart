@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 
-/// Central color tokens — updated to a light theme with deep purple accents 
-/// based on the provided reference design.
+/// Central color tokens — updated to a modern light theme with soft indigo accents
+/// harmonized with the logo color #7974EC.
 class AppColors {
+  static const MaterialColor primarySwatch = MaterialColor(
+    0xFF7974EC,
+    <int, Color>{
+      50: Color(0xFFF2F1FD),
+      100: Color(0xFFDFDDFA),
+      200: Color(0xFFC9C7F6),
+      300: Color(0xFFB3B0F2),
+      400: Color(0xFFA19DF0),
+      500: Color(0xFF7974EC), // Base Logo Color
+      600: Color(0xFF6E69DF),
+      700: Color(0xFF605CCF),
+      800: Color(0xFF5350C0),
+      900: Color(0xFF3C39A6),
+    },
+  );
   static const bgApp = Color(0xFFF4F6FB); // Very light greyish blue background
   static const sidebar = Color(0xFFFFFFFF);
   static const card = Color(0xFFFFFFFF);
@@ -15,11 +30,11 @@ class AppColors {
   static const income = Color(0xFF10B981); // Green
   static const expense = Color(0xFFF43F5E); // Red
   static const balance = Color(0xFF3B82F6); // Blue
-  static const accent = Color(0xFF4A00E0); // Deep Purple
-  static const accentSecondary = Color(0xFF8E24AA); // Light Purple
+  static const accent = Color(0xFF7974EC); // Soft Indigo (Logo Color)
+  static const accentSecondary = Color(0xFF605CCF); // Shade 700
 
   static const categoryPalette = <Color>[
-    Color(0xFF4A00E0),
+    Color(0xFF7974EC),
     Color(0xFF8E24AA),
     Color(0xFF3B82F6),
     Color(0xFF10B981),
