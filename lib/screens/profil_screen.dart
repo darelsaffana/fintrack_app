@@ -1,4 +1,4 @@
-import 'dart:typed_data'; // WAJIB TAMBAH UNTUK UINT8LIST
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +6,6 @@ import '../core/api_client.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import '../widgets/theme_toggle_button.dart';
 import 'login_screen.dart';
 
@@ -18,226 +17,164 @@ class ProfilScreen extends StatefulWidget {
 }
 
 class _ProfilScreenState extends State<ProfilScreen> {
-  final _formKey = GlobalKey<FormState>(); // Logika asli dipertahankan[cite: 5]
-
-  late final TextEditingController _name;
-  late final TextEditingController _email;
-  final _currentPassword = TextEditingController();
-  final _newPassword = TextEditingController();
-  final _confirmPassword = TextEditingController();
-
-  bool _saving = false; // Logika asli dipertahankan[cite: 5]
-  bool _saved = false; // Logika asli dipertahankan[cite: 5]
-  String? _error; // Logika asli dipertahankan[cite: 5]
-
-  // Variabel baru untuk menampung gambar sementara secara lokal
   Uint8List? _localAvatarBytes;
 
-  @override
-  void initState() {
-    super.initState();
-    final user =
-        context.read<AuthProvider>().user; // Logika asli dipertahankan[cite: 5]
-    _name = TextEditingController(
-        text: user?.name ?? ''); // Logika asli dipertahankan[cite: 5]
-    _email = TextEditingController(
-        text: user?.email ?? ''); // Logika asli dipertahankan[cite: 5]
-  }
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _email.dispose();
-    _currentPassword.dispose();
-    _newPassword.dispose();
-    _confirmPassword.dispose();
-    super.dispose();
-  }
-
   Future<void> _pickPhoto() async {
-    // Logika asli dipertahankan[cite: 5]
     final picker = ImagePicker();
-    final picked =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked == null || !mounted) return;
 
     final bytes = await picked.readAsBytes();
     if (!mounted) return;
 
-    // LANGSUNG PASANG DI STATE LOKAL AGAR UI BERUBAH DETIK ITU JUGA
     setState(() {
       _localAvatarBytes = bytes;
     });
 
     try {
-      await context.read<AuthProvider>().uploadAvatar(
-          bytes, picked.name); // Logika asli dipertahankan[cite: 5]
+      await context.read<AuthProvider>().uploadAvatar(bytes, picked.name);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Gagal mengunggah foto ke server: ${extractErrorMessage(e)}')),
+          SnackBar(content: Text('Gagal mengunggah foto: ${extractErrorMessage(e)}')),
         );
       }
-    }
-  }
-
-  Future<void> _submit() async {
-    // Logika asli dipertahankan[cite: 5]
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _saving = true;
-      _error = null;
-      _saved = false;
-    });
-
-    try {
-      final auth = context.read<AuthProvider>();
-
-      await auth.updateProfile(_name.text.trim(),
-          _email.text.trim()); // Logika asli dipertahankan[cite: 5]
-
-      if (_newPassword.text.isNotEmpty) {
-        await auth.changePassword(
-          // Logika asli dipertahankan[cite: 5]
-          currentPassword: _currentPassword.text,
-          newPassword: _newPassword.text,
-          newPasswordConfirmation: _confirmPassword.text,
-        );
-        _currentPassword.clear();
-        _newPassword.clear();
-        _confirmPassword.clear();
-      }
-
-      setState(() => _saved = true);
-    } catch (e) {
-      setState(() => _error = extractErrorMessage(e));
-    } finally {
-      if (mounted) setState(() => _saving = false);
     }
   }
 
   Future<void> _logout() async {
-    // Logika asli dipertahankan[cite: 5]
     await context.read<AuthProvider>().logout();
+    if (!mounted) return;
     context.read<AppProvider>().reset();
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-        (route) => false,
-      );
-    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  void _showEditProfileModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _EditProfileModal(),
+    );
+  }
+
+  void _showChangePasswordModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _ChangePasswordModal(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final isWide =
-          constraints.maxWidth >= 700; // Logika asli dipertahankan[cite: 5]
-
-      final summaryCard = _ProfileSummaryCard(
-        onPickPhoto: _pickPhoto,
-        onLogout: _logout,
-        localBytes: _localAvatarBytes, // Kirim bytes lokal ke UI Card
-      );
-      final formCard = _ProfileFormCard(
-        formKey: _formKey,
-        name: _name,
-        email: _email,
-        currentPassword: _currentPassword,
-        newPassword: _newPassword,
-        confirmPassword: _confirmPassword,
-        saving: _saving,
-        saved: _saved,
-        error: _error,
-        onSubmit: _submit,
-      );
-
-      return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Profil',
-              style: TextStyle(
-                color: AppColors.text(context),
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.5,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Profil',
+                style: TextStyle(
+                  color: AppColors.text(context),
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            if (isWide)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: 280, child: summaryCard),
-                  const SizedBox(width: 20),
-                  Expanded(child: formCard),
-                ],
-              )
-            else
-              Column(
-                children: [
-                  summaryCard,
-                  const SizedBox(height: 20),
-                  formCard,
-                ],
+              const SizedBox(height: 24),
+              _ProfileHeaderCard(
+                onPickPhoto: _pickPhoto,
+                localBytes: _localAvatarBytes,
               ),
-          ],
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.card(context),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppColors.cardBorder(context).withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _MenuTile(
+                      icon: Icons.person_rounded,
+                      title: 'Edit Profil',
+                      onTap: _showEditProfileModal,
+                    ),
+                    const _Divider(),
+                    _MenuTile(
+                      icon: Icons.lock_rounded,
+                      title: 'Keamanan & Password',
+                      onTap: _showChangePasswordModal,
+                    ),
+                    const _Divider(),
+                    _MenuTile(
+                      icon: Icons.palette_rounded,
+                      title: 'Tema Tampilan',
+                      trailing: const ThemeToggleButton(),
+                    ),
+                    const _Divider(),
+                    _MenuTile(
+                      icon: Icons.logout_rounded,
+                      title: 'Keluar Akun',
+                      isDestructive: true,
+                      onTap: _logout,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
-class _ProfileSummaryCard extends StatelessWidget {
+class _ProfileHeaderCard extends StatelessWidget {
   final VoidCallback onPickPhoto;
-  final VoidCallback onLogout;
-  final Uint8List? localBytes; // Variabel baru ditambahkan
+  final Uint8List? localBytes;
 
-  const _ProfileSummaryCard({
-    required this.onPickPhoto,
-    required this.onLogout,
-    this.localBytes,
-  });
+  const _ProfileHeaderCard({required this.onPickPhoto, this.localBytes});
 
   ImageProvider? _avatarImage(AuthProvider auth) {
-    // Logika asli dipertahankan[cite: 5]
-    if (localBytes != null)
-      return MemoryImage(
-          localBytes!); // Prioritaskan cache lokal yang baru dipilih
-    if (auth.avatarPreview != null)
-      return MemoryImage(auth.avatarPreview!); // Fallback 1[cite: 5]
-    if (auth.user?.avatarUrl != null)
-      return NetworkImage(auth.user!.avatarUrl!); // Fallback 2[cite: 5]
+    if (localBytes != null) return MemoryImage(localBytes!);
+    if (auth.avatarPreview != null) return MemoryImage(auth.avatarPreview!);
+    if (auth.user?.avatarUrl != null) return NetworkImage(auth.user!.avatarUrl!);
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>(); // Logika asli dipertahankan
+    final auth = context.watch<AuthProvider>();
     final user = auth.user;
     final initials = (user?.name.isNotEmpty == true)
-        ? user!.name
-            .trim()
-            .split(RegExp(r'\s+'))
-            .take(2)
-            .map((w) => w[0].toUpperCase())
-            .join()
+        ? user!.name.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0].toUpperCase()).join()
         : 'P';
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       decoration: BoxDecoration(
         color: AppColors.card(context),
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.cardBorder(context).withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withOpacity(0.02),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -246,13 +183,12 @@ class _ProfileSummaryCard extends StatelessWidget {
       child: Column(
         children: [
           Stack(
+            alignment: Alignment.center,
             children: [
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                      color: AppColors.accent(context).withOpacity(0.3),
-                      width: 3),
+                  border: Border.all(color: AppColors.accent(context).withOpacity(0.3), width: 3),
                 ),
                 child: CircleAvatar(
                   radius: 50,
@@ -272,17 +208,12 @@ class _ProfileSummaryCard extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.black.withOpacity(0.4),
-                    child: const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2.5, color: Colors.white),
-                    ),
+                    child: const CircularProgressIndicator(color: Colors.white),
                   ),
                 ),
               Positioned(
-                right: 2,
-                bottom: 2,
+                right: 0,
+                bottom: 0,
                 child: InkWell(
                   onTap: onPickPhoto,
                   borderRadius: BorderRadius.circular(24),
@@ -291,94 +222,31 @@ class _ProfileSummaryCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.accent(context),
                       shape: BoxShape.circle,
-                      border: Border.all(
-                          color: AppColors.card(context), width: 2.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.accent(context).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                      border: Border.all(color: AppColors.card(context), width: 2.5),
                     ),
-                    child: const Icon(Icons.camera_alt_rounded,
-                        size: 16, color: Colors.white),
+                    child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           Text(
             user?.name.isNotEmpty == true ? user!.name : 'Pengguna',
-            textAlign: TextAlign.center,
             style: TextStyle(
-                color: AppColors.text(context),
-                fontWeight: FontWeight.w800,
-                fontSize: 18,
-                letterSpacing: -0.3),
+              color: AppColors.text(context),
+              fontWeight: FontWeight.w800,
+              fontSize: 20,
+              letterSpacing: -0.3,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             user?.email ?? '-',
-            textAlign: TextAlign.center,
             style: TextStyle(
-                color: AppColors.muted(context),
-                fontSize: 13,
-                fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: onPickPhoto,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.accent(context),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('Ubah Foto Profil',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(height: 8),
-          // Dark Mode Section
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.cardBorder(context)),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Tema',
-                  style: TextStyle(
-                    color: AppColors.text(context),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const ThemeToggleButton(),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: onLogout,
-            icon: Icon(Icons.logout_rounded,
-                size: 18, color: AppColors.expense(context)),
-            label: Text('Keluar Akun',
-                style: TextStyle(
-                    color: AppColors.expense(context),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13)),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              side: BorderSide(
-                  color: AppColors.expense(context).withOpacity(0.5)),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              color: AppColors.muted(context),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -387,224 +255,48 @@ class _ProfileSummaryCard extends StatelessWidget {
   }
 }
 
-class _ProfileFormCard extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController name;
-  final TextEditingController email;
-  final TextEditingController currentPassword;
-  final TextEditingController newPassword;
-  final TextEditingController confirmPassword;
-  final bool saving;
-  final bool saved;
-  final String? error;
-  final VoidCallback onSubmit;
+class _MenuTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback? onTap;
+  final Widget? trailing;
+  final bool isDestructive;
 
-  const _ProfileFormCard({
-    required this.formKey,
-    required this.name,
-    required this.email,
-    required this.currentPassword,
-    required this.newPassword,
-    required this.confirmPassword,
-    required this.saving,
-    required this.saved,
-    required this.error,
-    required this.onSubmit,
+  const _MenuTile({
+    required this.icon,
+    required this.title,
+    this.onTap,
+    this.trailing,
+    this.isDestructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width >=
-        700; // Logika asli dipertahankan[cite: 5]
+    final color = isDestructive ? AppColors.expense(context) : AppColors.text(context);
+    final iconColor = isDestructive ? AppColors.expense(context) : AppColors.muted(context);
 
-    InputDecoration fieldDecoration(
-        {required String labelText, String? hintText}) {
-      return InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        labelStyle: TextStyle(
-            color: AppColors.muted(context), fontWeight: FontWeight.w500),
-        floatingLabelStyle: TextStyle(
-            color: AppColors.accent(context), fontWeight: FontWeight.bold),
-        filled: true,
-        fillColor: AppColors.cardBorder(context).withOpacity(0.15),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppColors.accent(context), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppColors.expense(context), width: 1),
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.card(context),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.01),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Form(
-        key: formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        child: Row(
           children: [
-            const _SectionLabel('INFORMASI AKUN'),
-            const SizedBox(height: 16),
-            LayoutBuilder(builder: (context, c) {
-              final sideBySide = c.maxWidth >= 480;
-              final nameField = TextFormField(
-                controller: name,
+            Icon(icon, color: iconColor, size: 22),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
                 style: TextStyle(
-                    color: AppColors.text(context),
-                    fontWeight: FontWeight.w600),
-                decoration: fieldDecoration(labelText: 'Nama Lengkap'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
-              );
-              final emailField = TextFormField(
-                controller: email,
-                keyboardType: TextInputType.emailAddress,
-                style: TextStyle(
-                    color: AppColors.text(context),
-                    fontWeight: FontWeight.w600),
-                decoration: fieldDecoration(labelText: 'Email Aktif'),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Email wajib diisi'
-                    : null,
-              );
-              if (sideBySide) {
-                return Row(children: [
-                  Expanded(child: nameField),
-                  const SizedBox(width: 14),
-                  Expanded(child: emailField),
-                ]);
-              }
-              return Column(children: [
-                nameField,
-                const SizedBox(height: 14),
-                emailField
-              ]);
-            }),
-            const SizedBox(height: 32),
-            const _SectionLabel('GANTI PASSWORD (OPSIONAL)'),
-            const SizedBox(height: 6),
-            Text(
-              'Kosongkan kolom di bawah ini jika kamu tidak ingin melakukan perubahan password.',
-              style: TextStyle(
-                  color: AppColors.muted(context), fontSize: 12, height: 1.4),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: currentPassword,
-              obscureText: true,
-              style: TextStyle(
-                  color: AppColors.text(context), fontWeight: FontWeight.w600),
-              decoration: fieldDecoration(labelText: 'Password Saat Ini'),
-              validator: (v) {
-                if (newPassword.text.isEmpty) return null;
-                return (v == null || v.isEmpty)
-                    ? 'Masukkan password saat ini'
-                    : null;
-              },
-            ),
-            const SizedBox(height: 14),
-            LayoutBuilder(builder: (context, c) {
-              final sideBySide = c.maxWidth >= 480;
-              final newPassField = TextFormField(
-                controller: newPassword,
-                obscureText: true,
-                style: TextStyle(
-                    color: AppColors.text(context),
-                    fontWeight: FontWeight.w600),
-                decoration: fieldDecoration(labelText: 'Password Baru'),
-                validator: (v) {
-                  if (v == null || v.isEmpty) return null;
-                  return v.length < 6 ? 'Minimal 6 karakter' : null;
-                },
-              );
-              final confirmField = TextFormField(
-                controller: confirmPassword,
-                obscureText: true,
-                style: TextStyle(
-                    color: AppColors.text(context),
-                    fontWeight: FontWeight.w600),
-                decoration:
-                    fieldDecoration(labelText: 'Konfirmasi Password Baru'),
-                validator: (v) {
-                  if (newPassword.text.isEmpty) return null;
-                  return (v != newPassword.text)
-                      ? 'Konfirmasi tidak cocok'
-                      : null;
-                },
-              );
-              if (sideBySide) {
-                return Row(children: [
-                  Expanded(child: newPassField),
-                  const SizedBox(width: 14),
-                  Expanded(child: confirmField),
-                ]);
-              }
-              return Column(children: [
-                newPassField,
-                const SizedBox(height: 14),
-                confirmField
-              ]);
-            }),
-            if (error != null) ...[
-              const SizedBox(height: 16),
-              Text(error!,
-                  style: TextStyle(
-                      color: AppColors.expense(context),
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold)),
-            ],
-            const SizedBox(height: 32),
-            Align(
-              alignment: Alignment.centerRight,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: isWide ? 180 : double.infinity,
-                child: ElevatedButton(
-                  onPressed: saving ? null : onSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: saved
-                        ? const Color(0xFF2EC4B6)
-                        : AppColors.accent(context),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
-                  ),
-                  child: saving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white))
-                      : Text(
-                          saved ? 'Tersimpan ✓' : 'Simpan Perubahan',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 14),
-                        ),
+                  color: color,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
+            if (trailing != null) trailing!
+            else if (onTap != null)
+              Icon(Icons.chevron_right_rounded, color: AppColors.mutedDim(context), size: 24),
           ],
         ),
       ),
@@ -612,20 +304,265 @@ class _ProfileFormCard extends StatelessWidget {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
+class _Divider extends StatelessWidget {
+  const _Divider();
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: AppColors.accent(context),
-        fontSize: 11,
-        fontWeight: FontWeight.w900,
-        letterSpacing: 1.0,
+    return Divider(
+      height: 1,
+      thickness: 1,
+      indent: 56,
+      endIndent: 20,
+      color: AppColors.cardBorder(context).withOpacity(0.5),
+    );
+  }
+}
+
+// ==========================================
+// MODAL: EDIT PROFIL
+// ==========================================
+class _EditProfileModal extends StatefulWidget {
+  @override
+  State<_EditProfileModal> createState() => _EditProfileModalState();
+}
+
+class _EditProfileModalState extends State<_EditProfileModal> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _name;
+  late final TextEditingController _email;
+  bool _saving = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = context.read<AuthProvider>().user;
+    _name = TextEditingController(text: user?.name ?? '');
+    _email = TextEditingController(text: user?.email ?? '');
+  }
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _email.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() { _saving = true; _error = null; });
+    try {
+      await context.read<AuthProvider>().updateProfile(_name.text.trim(), _email.text.trim());
+      if (mounted) Navigator.pop(context); // Tutup modal jika sukses
+    } catch (e) {
+      setState(() => _error = extractErrorMessage(e));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    return Container(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      decoration: BoxDecoration(
+        color: AppColors.card(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(color: AppColors.cardBorder(context), borderRadius: BorderRadius.circular(4)),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text('Edit Profil', style: TextStyle(color: AppColors.text(context), fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                if (_error != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: AppColors.expense(context).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                    child: Text(_error!, style: TextStyle(color: AppColors.expense(context), fontSize: 13, fontWeight: FontWeight.w600)),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                TextFormField(
+                  controller: _name,
+                  style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
+                  decoration: _inputDecoration(context, 'Nama Lengkap'),
+                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama tidak boleh kosong' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _email,
+                  style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
+                  decoration: _inputDecoration(context, 'Email'),
+                  validator: (v) => (v == null || !v.contains('@')) ? 'Email tidak valid' : null,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _saving ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent(context),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: _saving
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('Simpan Perubahan', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
+}
+
+// ==========================================
+// MODAL: GANTI PASSWORD
+// ==========================================
+class _ChangePasswordModal extends StatefulWidget {
+  @override
+  State<_ChangePasswordModal> createState() => _ChangePasswordModalState();
+}
+
+class _ChangePasswordModalState extends State<_ChangePasswordModal> {
+  final _formKey = GlobalKey<FormState>();
+  final _currentPassword = TextEditingController();
+  final _newPassword = TextEditingController();
+  final _confirmPassword = TextEditingController();
+  bool _saving = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _currentPassword.dispose();
+    _newPassword.dispose();
+    _confirmPassword.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() { _saving = true; _error = null; });
+    try {
+      await context.read<AuthProvider>().changePassword(
+        currentPassword: _currentPassword.text,
+        newPassword: _newPassword.text,
+        newPasswordConfirmation: _confirmPassword.text,
+      );
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password berhasil diubah!')));
+      }
+    } catch (e) {
+      setState(() => _error = extractErrorMessage(e));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    return Container(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      decoration: BoxDecoration(
+        color: AppColors.card(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(color: AppColors.cardBorder(context), borderRadius: BorderRadius.circular(4)),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text('Ganti Password', style: TextStyle(color: AppColors.text(context), fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                if (_error != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: AppColors.expense(context).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                    child: Text(_error!, style: TextStyle(color: AppColors.expense(context), fontSize: 13, fontWeight: FontWeight.w600)),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                TextFormField(
+                  controller: _currentPassword,
+                  obscureText: true,
+                  style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
+                  decoration: _inputDecoration(context, 'Password Saat Ini'),
+                  validator: (v) => (v == null || v.isEmpty) ? 'Wajib diisi' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _newPassword,
+                  obscureText: true,
+                  style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
+                  decoration: _inputDecoration(context, 'Password Baru'),
+                  validator: (v) => (v == null || v.length < 6) ? 'Minimal 6 karakter' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmPassword,
+                  obscureText: true,
+                  style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
+                  decoration: _inputDecoration(context, 'Konfirmasi Password Baru'),
+                  validator: (v) => v != _newPassword.text ? 'Password tidak sama' : null,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _saving ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent(context),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: _saving
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('Simpan Password', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Utility style for modal text fields
+InputDecoration _inputDecoration(BuildContext context, String label) {
+  return InputDecoration(
+    labelText: label,
+    labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
+    filled: true,
+    fillColor: AppColors.cardBorder(context).withOpacity(0.15),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.accent(context), width: 1.5)),
+  );
 }
