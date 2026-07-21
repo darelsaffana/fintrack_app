@@ -6,7 +6,7 @@ import '../core/api_client.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/theme_toggle_button.dart';
+import '../providers/theme_provider.dart';
 import 'login_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
@@ -70,6 +70,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 
+  void _showThemeModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => const _ThemeModal(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -125,7 +133,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     _MenuTile(
                       icon: Icons.palette_rounded,
                       title: 'Tema Tampilan',
-                      trailing: const ThemeToggleButton(),
+                      onTap: _showThemeModal,
                     ),
                     const _Divider(),
                     _MenuTile(
@@ -565,4 +573,84 @@ InputDecoration _inputDecoration(BuildContext context, String label) {
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
     focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.accent(context), width: 1.5)),
   );
+}
+
+// ==========================================
+// MODAL: PILIH TEMA
+// ==========================================
+class _ThemeModal extends StatelessWidget {
+  const _ThemeModal();
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final currentMode = themeProvider.themeModeOption;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(color: AppColors.cardBorder(context), borderRadius: BorderRadius.circular(4)),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text('Pilih Tema Tampilan', style: TextStyle(color: AppColors.text(context), fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              _buildOption(context, ThemeModeOption.light, 'Mode Terang', Icons.wb_sunny_rounded, currentMode, themeProvider),
+              const SizedBox(height: 12),
+              _buildOption(context, ThemeModeOption.dark, 'Mode Gelap', Icons.nightlight_round, currentMode, themeProvider),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOption(BuildContext context, ThemeModeOption mode, String title, IconData icon, ThemeModeOption currentMode, ThemeProvider provider) {
+    final isSelected = mode == currentMode;
+    return InkWell(
+      onTap: () {
+        provider.setThemeMode(mode);
+        Navigator.pop(context);
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.accent(context).withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isSelected ? AppColors.accent(context) : AppColors.cardBorder(context).withOpacity(0.5)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: isSelected ? AppColors.accent(context) : AppColors.muted(context), size: 24),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? AppColors.accent(context) : AppColors.text(context),
+                  fontSize: 16,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(Icons.check_circle_rounded, color: AppColors.accent(context), size: 24),
+          ],
+        ),
+      ),
+    );
+  }
 }
