@@ -286,7 +286,7 @@ class _CategoryFormState extends State<_CategoryForm> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   late String _type;
-  late Color _color;
+  Color? _color;
   bool _saving = false;
   String? _error;
 
@@ -295,11 +295,14 @@ class _CategoryFormState extends State<_CategoryForm> {
     super.initState();
     _name.text = widget.existing?.name ?? ''; // Logika asli dipertahankan[cite: 2]
     _type = widget.existing?.type ?? widget.defaultType; // Logika asli dipertahankan[cite: 2]
-    _color = widget.existing != null ? hexToColor(widget.existing!.color) : AppColors.categoryPalette(context).first; // Logika asli dipertahankan[cite: 2]
+    if (widget.existing != null) {
+      _color = hexToColor(widget.existing!.color);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    _color ??= AppColors.categoryPalette(context).first;
     return Padding(
       padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
       child: SingleChildScrollView(
