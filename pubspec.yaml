@@ -40,7 +40,7 @@ flutter_native_splash:
   android_gravity: center
   ios_content_mode: center
 
-# 👈 Konfigurasi untuk generate ikon aplikasi otomatis
+# Konfigurasi untuk generate ikon aplikasi otomatis
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
