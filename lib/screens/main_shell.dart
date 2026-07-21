@@ -22,7 +22,6 @@ class _MainShellState extends State<MainShell> {
   int _index = 0;
   bool _loaded = false;
 
-  static const _titles = ['Dashboard', 'Transaksi', 'Kategori', 'Laporan', 'Profil'];
   static const _pages = [
     DashboardScreen(),
     TransaksiScreen(),
@@ -53,15 +52,17 @@ class _MainShellState extends State<MainShell> {
     final provider = context.watch<AppProvider>();
 
     final body = !_loaded && provider.loading
-        ? const Center(child: CircularProgressIndicator(color: AppColors.accent))
+        ? Center(
+            child: CircularProgressIndicator(color: AppColors.accent(context)))
         : IndexedStack(index: _index, children: _pages);
 
-if (isWide) {
+    if (isWide) {
       return Scaffold(
         // Kita hapus backgroundColor agar Scaffold menggunakan warna default tema Anda
         body: Row(
           children: [
-            _Sidebar(index: _index, onSelect: (i) => setState(() => _index = i)),
+            _Sidebar(
+                index: _index, onSelect: (i) => setState(() => _index = i)),
             Expanded(
               child: body,
             ),
@@ -79,7 +80,7 @@ if (isWide) {
         child: Container(
           margin: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.card(context),
             borderRadius: BorderRadius.circular(40),
             boxShadow: [
               BoxShadow(
@@ -94,16 +95,19 @@ if (isWide) {
             child: NavigationBar(
               selectedIndex: _index,
               onDestinationSelected: (i) => setState(() => _index = i),
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.card(context),
               elevation: 0,
               height: 64, // Lebih ramping
-              indicatorColor: AppColors.accent.withOpacity(0.15),
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide, // Menyembunyikan teks label seperti desain
+              indicatorColor: AppColors.accent(context).withOpacity(0.15),
+              labelBehavior: NavigationDestinationLabelBehavior
+                  .alwaysHide, // Menyembunyikan teks label seperti desain
               destinations: [
                 for (final d in _destinations)
                   NavigationDestination(
-                    icon: Icon(d.icon, color: AppColors.muted, size: 24),
-                    selectedIcon: Icon(d.icon, color: AppColors.accent, size: 24),
+                    icon:
+                        Icon(d.icon, color: AppColors.muted(context), size: 24),
+                    selectedIcon: Icon(d.icon,
+                        color: AppColors.accent(context), size: 24),
                     label: d.label,
                   ),
               ],
@@ -133,10 +137,10 @@ class _Sidebar extends StatelessWidget {
     return Container(
       width: 260, // Sedikit diperlebar agar tata letak sidebar lebih lega
       decoration: BoxDecoration(
-        color: AppColors.sidebar,
+        color: AppColors.sidebar(context),
         border: Border(
           right: BorderSide(
-            color: AppColors.cardBorder.withOpacity(0.4),
+            color: AppColors.cardBorder(context).withOpacity(0.4),
             width: 1,
           ),
         ),
@@ -151,48 +155,56 @@ class _Sidebar extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/images/LogoFintrack.png',
-                  width: 38, 
+                  width: 38,
                   height: 38,
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Fintrack', 
+                  'Fintrack',
                   style: TextStyle(
-                    fontSize: 20, 
-                    fontWeight: FontWeight.w900, 
-                    color: AppColors.text,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.text(context),
                     letterSpacing: -0.5,
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // ITEM NAVIGATION SIDEBAR
           for (int i = 0; i < _items.length; i++)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Material(
-                color: i == index ? AppColors.accent.withOpacity(0.1) : Colors.transparent,
+                color: i == index
+                    ? AppColors.accent(context).withOpacity(0.1)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () => onSelect(i),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
                         Icon(
-                          _items[i].icon, 
-                          size: 20, 
-                          color: i == index ? AppColors.accent : AppColors.muted,
+                          _items[i].icon,
+                          size: 20,
+                          color: i == index
+                              ? AppColors.accent(context)
+                              : AppColors.muted(context),
                         ),
                         const SizedBox(width: 14),
                         Text(
-                          _items[i].label, 
+                          _items[i].label,
                           style: TextStyle(
-                            color: i == index ? AppColors.accent : AppColors.muted,
-                            fontWeight: i == index ? FontWeight.bold : FontWeight.w600, 
+                            color: i == index
+                                ? AppColors.accent(context)
+                                : AppColors.muted(context),
+                            fontWeight:
+                                i == index ? FontWeight.bold : FontWeight.w600,
                             fontSize: 14,
                           ),
                         ),
@@ -203,18 +215,20 @@ class _Sidebar extends StatelessWidget {
               ),
             ),
           const Spacer(),
-          
+
           // FOOTER SIDEBAR
           Padding(
             padding: const EdgeInsets.all(24),
             child: Row(
               children: [
-                Icon(Icons.info_outline_rounded, size: 14, color: AppColors.mutedDim.withOpacity(0.6)),
+                Icon(Icons.info_outline_rounded,
+                    size: 14,
+                    color: AppColors.mutedDim(context).withOpacity(0.6)),
                 const SizedBox(width: 6),
                 Text(
-                  'Fintrack · v1.0', 
+                  'Fintrack Ã‚Â· v1.0',
                   style: TextStyle(
-                    color: AppColors.mutedDim, 
+                    color: AppColors.mutedDim(context),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),

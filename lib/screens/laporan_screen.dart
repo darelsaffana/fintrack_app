@@ -23,10 +23,10 @@ class LaporanScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Laporan',
             style: TextStyle(
-              color: AppColors.text,
+              color: AppColors.text(context),
               fontSize: 28,
               fontWeight: FontWeight.w900,
               letterSpacing: -0.5,
@@ -72,7 +72,7 @@ class _CategoryReportCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22), // Padding di dalam kartu diperlebar agar lapang
       decoration: BoxDecoration(
-        color: AppColors.card, 
+        color: AppColors.card(context), 
         borderRadius: BorderRadius.circular(24), // Sudut melengkung 24 yang modern
         boxShadow: [
           BoxShadow(
@@ -89,7 +89,7 @@ class _CategoryReportCard extends StatelessWidget {
           Text(
             'Pengeluaran per Kategori', 
             style: TextStyle(
-              color: AppColors.muted, 
+              color: AppColors.muted(context), 
               fontWeight: FontWeight.w800, 
               fontSize: 14,
               letterSpacing: 0.1,
@@ -99,7 +99,7 @@ class _CategoryReportCard extends StatelessWidget {
           if (items.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
-              child: Center(child: Text('Belum ada pengeluaran.', style: TextStyle(color: AppColors.mutedDim, fontSize: 13))),
+              child: Center(child: Text('Belum ada pengeluaran.', style: TextStyle(color: AppColors.mutedDim(context), fontSize: 13))),
             )
           else ...[
             SizedBox(
@@ -152,7 +152,7 @@ class _CategoryReportCard extends StatelessWidget {
                         Text(
                           e.name, // Logika asli dipertahankan[cite: 3]
                           style: TextStyle(
-                            color: AppColors.text, 
+                            color: AppColors.text(context), 
                             fontSize: 13, 
                             fontWeight: FontWeight.w600, // Diubah ke semi-bold
                           ),
@@ -160,9 +160,9 @@ class _CategoryReportCard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '${formatRupiah(e.total)} · ${total > 0 ? ((e.total / total) * 100).round() : 0}%', // Logika asli dipertahankan[cite: 3]
+                      '${formatRupiah(e.total)} Ã‚Â· ${total > 0 ? ((e.total / total) * 100).round() : 0}%', // Logika asli dipertahankan[cite: 3]
                       style: TextStyle(
-                        color: AppColors.muted, 
+                        color: AppColors.muted(context), 
                         fontSize: 12.5,
                         fontWeight: FontWeight.bold, // Ditebalkan agar angka persentase mudah dibaca
                       ),
@@ -189,7 +189,7 @@ class _MonthReportCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22), // Padding di dalam kartu disamakan (22)
       decoration: BoxDecoration(
-        color: AppColors.card, 
+        color: AppColors.card(context), 
         borderRadius: BorderRadius.circular(24), // Sudut melengkung 24
         boxShadow: [
           BoxShadow(
@@ -205,7 +205,7 @@ class _MonthReportCard extends StatelessWidget {
           Text(
             'Pemasukan vs Pengeluaran', 
             style: TextStyle(
-              color: AppColors.muted, 
+              color: AppColors.muted(context), 
               fontWeight: FontWeight.w800, // Diubah menjadi lebih tebal
               fontSize: 14,
               letterSpacing: 0.1,
@@ -215,7 +215,7 @@ class _MonthReportCard extends StatelessWidget {
           Text(
             'Laporan perbandingan dalam 6 bulan terakhir',
             style: TextStyle(
-              color: AppColors.mutedDim,
+              color: AppColors.mutedDim(context),
               fontSize: 11.5,
               fontWeight: FontWeight.w500,
             ),
@@ -224,7 +224,7 @@ class _MonthReportCard extends StatelessWidget {
           if (items.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
-              child: Center(child: Text('Belum ada data bulanan.', style: TextStyle(color: AppColors.mutedDim, fontSize: 13))),
+              child: Center(child: Text('Belum ada data bulanan.', style: TextStyle(color: AppColors.mutedDim(context), fontSize: 13))),
             )
           else
             SizedBox(
@@ -252,7 +252,7 @@ class _MonthReportCard extends StatelessWidget {
                           child: Text(
                             label, 
                             style: TextStyle(
-                              color: AppColors.muted, 
+                              color: AppColors.muted(context), 
                               fontSize: 10,
                               fontWeight: FontWeight.bold, // Teks bulan sedikit ditebalkan agar lebih bersih terbaca
                             ),
@@ -268,13 +268,13 @@ class _MonthReportCard extends StatelessWidget {
                       // Mengubah bentuk batang (BarRod) menjadi bulat melengkung penuh (BorderRadius 8)
                       BarChartRodData(
                         toY: items[i].income, 
-                        color: AppColors.income, 
+                        color: AppColors.income(context), 
                         width: 10, // Dilebarkan dari 8 ke 10 agar terlihat kokoh dan estetik
                         borderRadius: const BorderRadius.all(Radius.circular(8)),
                       ),
                       BarChartRodData(
                         toY: items[i].expense, 
-                        color: AppColors.expense, 
+                        color: AppColors.expense(context), 
                         width: 10, // Dilebarkan dari 8 ke 10
                         borderRadius: const BorderRadius.all(Radius.circular(8)),
                       ),
@@ -287,10 +287,10 @@ class _MonthReportCard extends StatelessWidget {
           // Bagian legenda diubah menjadi container baris yang sangat cantik
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              _LegendDot(color: AppColors.income, label: 'Pemasukan'),
+            children: [
+              _LegendDot(color: AppColors.income(context), label: 'Pemasukan'),
               SizedBox(width: 24), // Jarak antar legenda diperlebar agar seimbang
-              _LegendDot(color: AppColors.expense, label: 'Pengeluaran'),
+              _LegendDot(color: AppColors.expense(context), label: 'Pengeluaran'),
             ],
           ),
         ],
@@ -332,7 +332,7 @@ class _LegendDot extends StatelessWidget {
         Text(
           label, 
           style: TextStyle(
-            color: AppColors.text, // Menggunakan warna teks utama agar lebih terbaca
+            color: AppColors.text(context), // Menggunakan warna teks utama agar lebih terbaca
             fontSize: 12, 
             fontWeight: FontWeight.w600,
           ),

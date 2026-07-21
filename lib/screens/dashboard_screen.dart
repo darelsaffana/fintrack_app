@@ -11,14 +11,19 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>(); 
-    final summary = provider.summary; 
-    
+    final provider = context.watch<AppProvider>();
+    final summary = provider.summary;
+
     // Ambil data user
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
     final initials = (user?.name.isNotEmpty == true)
-        ? user!.name.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0].toUpperCase()).join()
+        ? user!.name
+            .trim()
+            .split(RegExp(r'\s+'))
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
         : 'P';
 
     // Helper untuk image
@@ -29,7 +34,7 @@ class DashboardScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () => provider.loadAll(), 
+      onRefresh: () => provider.loadAll(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         // Tidak perlu padding horizontal di root karena kita atur di dalam
@@ -43,16 +48,19 @@ class DashboardScreen extends StatelessWidget {
                 // BLOK UNGU
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 50), // Ruang untuk kartu overlap
-                  padding: const EdgeInsets.fromLTRB(24, 40, 24, 120), // Padding bawah diperbesar agar teks tidak tertutup
+                  margin: const EdgeInsets.only(
+                      bottom: 50), // Ruang untuk kartu overlap
+                  padding: const EdgeInsets.fromLTRB(24, 40, 24,
+                      120), // Padding bawah diperbesar agar teks tidak tertutup
                   decoration: BoxDecoration(
-                    color: AppColors.accent, // Warna deep purple
+                    color: AppColors.accent(context), // Warna deep purple
                     borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(40), // Hanya radius bawah agar rata atas
+                      bottom: Radius.circular(
+                          40), // Hanya radius bawah agar rata atas
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.accent.withOpacity(0.3),
+                        color: AppColors.accent(context).withOpacity(0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -63,10 +71,15 @@ class DashboardScreen extends StatelessWidget {
                       // FOTO PROFIL DI TENGAH (Sesuai Desain: Lingkaran polos tanpa ring/efek bertumpuk)
                       CircleAvatar(
                         radius: 28,
-                        backgroundColor: Colors.white, // Background putih utuh agar icon transparan terlihat jelas
+                        backgroundColor: Colors
+                            .white, // Background putih utuh agar icon transparan terlihat jelas
                         backgroundImage: getAvatarImage(),
                         child: getAvatarImage() == null
-                            ? Text(initials, style: const TextStyle(color: AppColors.accent, fontSize: 24, fontWeight: FontWeight.bold))
+                            ? Text(initials,
+                                style: TextStyle(
+                                    color: AppColors.accent(context),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold))
                             : null,
                       ),
                       const SizedBox(height: 16),
@@ -81,26 +94,28 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         formatRupiah(summary?.balance ?? 0),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 40, // Sedikit dibesarkan
                           fontWeight: FontWeight.w900,
                           letterSpacing: -1,
                         ),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis, // Agar tidak error jika angkanya sangat panjang
+                        overflow: TextOverflow
+                            .ellipsis, // Agar tidak error jika angkanya sangat panjang
                       ),
                     ],
                   ),
                 ),
-                
+
                 // KARTU OVERLAP (PEMASUKAN & PENGELUARAN)
                 Positioned(
                   bottom: 0,
                   left: 24,
                   right: 24,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 24, horizontal: 20),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(24),
@@ -116,36 +131,40 @@ class DashboardScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _buildQuickAction(
+                            context: context,
                             title: 'Pemasukan',
                             amount: summary?.income ?? 0,
                             icon: Icons.arrow_downward_rounded,
-                            color: AppColors.income,
+                            color: AppColors.income(context),
                           ),
                         ),
                         Container(
                           width: 1,
                           height: 48,
-                          color: AppColors.border,
+                          color: AppColors.border(context),
                         ),
                         Expanded(
                           child: _buildQuickAction(
+                            context: context,
                             title: 'Pengeluaran',
                             amount: summary?.expense ?? 0,
                             icon: Icons.arrow_upward_rounded,
-                            color: AppColors.expense,
+                            color: AppColors.expense(context),
                           ),
                         ),
                         Container(
                           width: 1,
                           height: 48,
-                          color: AppColors.border,
+                          color: AppColors.border(context),
                         ),
                         Expanded(
                           child: _buildQuickAction(
+                            context: context,
                             title: 'Saldo',
                             amount: summary?.balance ?? 0,
                             icon: Icons.account_balance_wallet_rounded,
-                            color: AppColors.balance, // Menggunakan warna biru
+                            color: AppColors.balance(
+                                context), // Menggunakan warna biru
                           ),
                         ),
                       ],
@@ -154,36 +173,35 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // TRANSAKSI TERAKHIR
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Transaksi Terakhir', 
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyLarge?.color, 
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
-                  letterSpacing: -0.3,
-                )
-              ),
+              child: Text('Transaksi Terakhir',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    letterSpacing: -0.3,
+                  )),
             ),
             const SizedBox(height: 12),
-            
+
             if (summary == null || summary.recentTransactions.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: EmptyState(message: 'Belum ada transaksi. Mulai catat keuanganmu!'),
+                child: EmptyState(
+                    message: 'Belum ada transaksi. Mulai catat keuanganmu!'),
               )
             else
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor, 
-                    borderRadius: BorderRadius.circular(24), 
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Column(
@@ -195,7 +213,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
             const SizedBox(height: 40),
           ],
         ),
@@ -203,7 +221,12 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickAction({required String title, required num amount, required IconData icon, required Color color}) {
+  Widget _buildQuickAction(
+      {required BuildContext context,
+      required String title,
+      required num amount,
+      required IconData icon,
+      required Color color}) {
     return Column(
       children: [
         Container(
@@ -212,13 +235,14 @@ class DashboardScreen extends StatelessWidget {
             color: color.withOpacity(0.15),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: color, size: 24), // Ukuran icon sedikit dikecilkan
+          child: Icon(icon,
+              color: color, size: 24), // Ukuran icon sedikit dikecilkan
         ),
         const SizedBox(height: 8),
         Text(
           title,
-          style: const TextStyle(
-            color: AppColors.muted,
+          style: TextStyle(
+            color: AppColors.muted(context),
             fontSize: 12, // Font size dikecilkan agar muat 3 item
             fontWeight: FontWeight.w600,
           ),
@@ -228,8 +252,8 @@ class DashboardScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           formatRupiah(amount),
-          style: const TextStyle(
-            color: AppColors.text,
+          style: TextStyle(
+            color: AppColors.text(context),
             fontSize: 13, // Font size nominal dikecilkan agar tidak terpotong
             fontWeight: FontWeight.w800,
           ),
@@ -239,4 +263,4 @@ class DashboardScreen extends StatelessWidget {
       ],
     );
   }
-}
+}

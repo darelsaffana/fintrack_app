@@ -50,17 +50,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon, Widget? suffixIcon}) {
       return InputDecoration(
         labelText: labelText,
-        labelStyle: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
-        floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
-        prefixIcon: Icon(prefixIcon, color: AppColors.muted, size: 20),
+        labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
+        floatingLabelStyle: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold),
+        prefixIcon: Icon(prefixIcon, color: AppColors.muted(context), size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: AppColors.cardBorder.withOpacity(0.15),
+        fillColor: AppColors.cardBorder(context).withOpacity(0.15),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.accent, width: 1.5)),
-        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.expense, width: 1)),
-        focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.expense, width: 1.5)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.accent(context), width: 1.5)),
+        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.expense(context), width: 1)),
+        focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.expense(context), width: 1.5)),
       );
     }
 
@@ -78,9 +78,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: AppColors.card,
+                      color: AppColors.card(context),
                       borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
+                      border: Border.all(color: AppColors.cardBorder(context).withOpacity(0.6)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.02),
@@ -98,12 +98,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // JUDUL HALAMAN
                           Text(
                             'Daftar Akun',
-                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.text, letterSpacing: -0.5),
+                            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.text(context), letterSpacing: -0.5),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             'Buat akun barumu untuk mulai mengatur finansial yang lebih baik',
-                            style: TextStyle(color: AppColors.muted, fontSize: 14, fontWeight: FontWeight.w500),
+                            style: TextStyle(color: AppColors.muted(context), fontSize: 14, fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 32),
 
@@ -112,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: _name,
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Nama Lengkap', prefixIcon: Icons.person_rounded),
                             validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
                           ),
@@ -122,7 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             autofillHints: const [AutofillHints.email],
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Email', prefixIcon: Icons.email_rounded),
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) return 'Email wajib diisi';
@@ -138,12 +138,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             obscureText: _obscurePassword,
                             textInputAction: TextInputAction.next,
                             autofillHints: const [AutofillHints.newPassword],
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(
                               labelText: 'Password', 
                               prefixIcon: Icons.lock_rounded,
                               suffixIcon: IconButton(
-                                icon: Icon(_obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted, size: 20),
+                                icon: Icon(_obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted(context), size: 20),
                                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                               ),
                             ),
@@ -155,12 +155,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             obscureText: _obscureConfirm,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) => _submit(),
-                            style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(
                               labelText: 'Konfirmasi Password', 
                               prefixIcon: Icons.lock_clock_rounded,
                               suffixIcon: IconButton(
-                                icon: Icon(_obscureConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted, size: 20),
+                                icon: Icon(_obscureConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted(context), size: 20),
                                 onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                               ),
                             ),
@@ -178,15 +178,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                                       decoration: BoxDecoration(
-                                        color: AppColors.expense.withOpacity(0.1),
+                                        color: AppColors.expense(context).withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: AppColors.expense.withOpacity(0.2)),
+                                        border: Border.all(color: AppColors.expense(context).withOpacity(0.2)),
                                       ),
                                       child: Row(
                                         children: [
-                                          const Icon(Icons.error_outline_rounded, color: AppColors.expense, size: 20),
+                                          Icon(Icons.error_outline_rounded, color: AppColors.expense(context), size: 20),
                                           const SizedBox(width: 10),
-                                          Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13, fontWeight: FontWeight.bold))),
+                                          Expanded(child: Text(_error!, style: TextStyle(color: AppColors.expense(context), fontSize: 13, fontWeight: FontWeight.bold))),
                                         ],
                                       ),
                                     ),
@@ -199,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ElevatedButton(
                             onPressed: _loading ? null : _submit,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.accent,
+                              backgroundColor: AppColors.accent(context),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -207,7 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             child: _loading
                                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
-                                : const Text('Daftar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                : Text('Daftar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                           ),
                         ],
                       ),
@@ -223,17 +223,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               left: 24,
               right: 24,
               child: Text.rich(
-                const TextSpan(
+                TextSpan(
                   text: 'Dengan mendaftar, Anda menyetujui\n',
                   children: [
-                    TextSpan(text: 'Syarat & Ketentuan', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold)),
+                    TextSpan(text: 'Syarat & Ketentuan', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
                     TextSpan(text: ' serta '),
-                    TextSpan(text: 'Kebijakan Privasi', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold)),
+                    TextSpan(text: 'Kebijakan Privasi', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
                     TextSpan(text: ' kami.'),
                   ],
                 ),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.muted, fontSize: 12, height: 1.5),
+                style: TextStyle(color: AppColors.muted(context), fontSize: 12, height: 1.5),
               ),
             ),
 
@@ -243,9 +243,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               left: 16,
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.text),
+                icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.text(context)),
                 style: IconButton.styleFrom(
-                  backgroundColor: AppColors.card,
+                  backgroundColor: AppColors.card(context),
                   padding: const EdgeInsets.all(12),
                   elevation: 2, // Opsional: Beri sedikit bayangan agar pop-out
                 ),

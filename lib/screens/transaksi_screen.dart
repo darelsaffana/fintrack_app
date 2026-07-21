@@ -33,10 +33,10 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Transaksi',
                 style: TextStyle(
-                  color: AppColors.text,
+                  color: AppColors.text(context),
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
@@ -44,9 +44,9 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
               ),
               IconButton.filled(
                 onPressed: () => _openForm(context), // Logika asli dipertahankan
-                icon: const Icon(Icons.add_rounded, size: 26, color: Colors.white),
+                icon: Icon(Icons.add_rounded, size: 26, color: Colors.white),
                 style: IconButton.styleFrom(
-                  backgroundColor: AppColors.accent,
+                  backgroundColor: AppColors.accent(context),
                   padding: const EdgeInsets.all(16),
                 ),
               ),
@@ -58,7 +58,7 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.cardBorder.withOpacity(0.5),
+              color: AppColors.cardBorder(context).withOpacity(0.5),
               borderRadius: BorderRadius.circular(100),
             ),
             child: Row(
@@ -96,7 +96,7 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
                 ? const EmptyState(message: 'Tidak ada transaksi untuk ditampilkan.') // Logika asli dipertahankan[cite: 4]
                 : Container(
                     decoration: BoxDecoration(
-                      color: AppColors.card,
+                      color: AppColors.card(context),
                       borderRadius: BorderRadius.circular(24), // Sudut melengkung 24 agar senada
                       boxShadow: [
                         BoxShadow(
@@ -128,19 +128,19 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.card,
+        backgroundColor: AppColors.card(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text('Hapus transaksi?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        content: const Text('Transaksi yang dihapus tidak dapat dikembalikan.'),
+        title: Text('Hapus transaksi?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        content: Text('Transaksi yang dihapus tidak dapat dikembalikan.'),
         actionsPadding: const EdgeInsets.only(right: 16, bottom: 12),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false), 
-            child: Text('Batal', style: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w600)),
+            child: Text('Batal', style: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w600)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true), 
-            child: const Text('Hapus', style: TextStyle(color: AppColors.expense, fontWeight: FontWeight.bold)),
+            child: Text('Hapus', style: TextStyle(color: AppColors.expense(context), fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -160,7 +160,7 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.card,
+      backgroundColor: AppColors.card(context),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))), // Sudut bottomsheet diubah menjadi 28 agar sangat halus
       builder: (_) => _TransactionForm(existing: existing), // Logika asli dipertahankan[cite: 4]
     );
@@ -182,12 +182,12 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accent : Colors.transparent,
+          color: selected ? AppColors.accent(context) : Colors.transparent,
           borderRadius: BorderRadius.circular(100),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: AppColors.accent.withOpacity(0.25),
+                    color: AppColors.accent(context).withOpacity(0.25),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   )
@@ -198,7 +198,7 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label, 
           style: TextStyle(
-            color: selected ? Colors.white : AppColors.muted, 
+            color: selected ? Colors.white : AppColors.muted(context), 
             fontSize: 13, 
             fontWeight: FontWeight.bold,
           ),
@@ -263,14 +263,14 @@ class _TransactionFormState extends State<_TransactionForm> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: AppColors.cardBorder,
+                    color: AppColors.cardBorder(context),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
               Text(
                 widget.existing == null ? 'Tambah Transaksi' : 'Ubah Transaksi', // Logika asli dipertahankan[cite: 4]
-                style: TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w800), // Diganti w800 agar konsisten dengan perbaikan error sebelumnya
+                style: TextStyle(color: AppColors.text(context), fontSize: 18, fontWeight: FontWeight.w800), // Diganti w800 agar konsisten dengan perbaikan error sebelumnya
               ),
               const SizedBox(height: 20),
               
@@ -280,13 +280,13 @@ class _TransactionFormState extends State<_TransactionForm> {
               // Kustomisasi dropdown agar bergaya modern
               DropdownButtonFormField<int>(
                 value: _categoryId, // Logika asli dipertahankan[cite: 4]
-                dropdownColor: AppColors.card,
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                dropdownColor: AppColors.card(context),
+                style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Kategori',
-                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                  labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
                   filled: true,
-                  fillColor: AppColors.cardBorder.withOpacity(0.15),
+                  fillColor: AppColors.cardBorder(context).withOpacity(0.15),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -302,13 +302,13 @@ class _TransactionFormState extends State<_TransactionForm> {
               TextFormField(
                 controller: _amount, // Logika asli dipertahankan[cite: 4]
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Jumlah (Rp)',
-                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
-                  floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+                  labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
+                  floatingLabelStyle: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold),
                   filled: true,
-                  fillColor: AppColors.cardBorder.withOpacity(0.15),
+                  fillColor: AppColors.cardBorder(context).withOpacity(0.15),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -316,7 +316,7 @@ class _TransactionFormState extends State<_TransactionForm> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+                    borderSide: BorderSide(color: AppColors.accent(context), width: 1.5),
                   ),
                 ),
                 validator: (v) => (v == null || double.tryParse(v) == null || double.parse(v) <= 0) ? 'Masukkan jumlah yang valid' : null, // Logika asli dipertahankan[cite: 4]
@@ -330,9 +330,9 @@ class _TransactionFormState extends State<_TransactionForm> {
                 child: InputDecorator(
                   decoration: InputDecoration(
                     labelText: 'Tanggal',
-                    labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
+                    labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
                     filled: true,
-                    fillColor: AppColors.cardBorder.withOpacity(0.15),
+                    fillColor: AppColors.cardBorder(context).withOpacity(0.15),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -344,9 +344,9 @@ class _TransactionFormState extends State<_TransactionForm> {
                     children: [
                       Text(
                         '${_date.day}/${_date.month}/${_date.year}', // Logika asli dipertahankan[cite: 4]
-                        style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                       ),
-                      Icon(Icons.calendar_month_rounded, size: 18, color: AppColors.muted),
+                      Icon(Icons.calendar_month_rounded, size: 18, color: AppColors.muted(context)),
                     ],
                   ),
                 ),
@@ -356,13 +356,13 @@ class _TransactionFormState extends State<_TransactionForm> {
               // Kustomisasi input Deskripsi
               TextFormField(
                 controller: _description, // Logika asli dipertahankan[cite: 4]
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Deskripsi (opsional)',
-                  labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
-                  floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+                  labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
+                  floatingLabelStyle: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold),
                   filled: true,
-                  fillColor: AppColors.cardBorder.withOpacity(0.15),
+                  fillColor: AppColors.cardBorder(context).withOpacity(0.15),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -370,13 +370,13 @@ class _TransactionFormState extends State<_TransactionForm> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+                    borderSide: BorderSide(color: AppColors.accent(context), width: 1.5),
                   ),
                 ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: const TextStyle(color: AppColors.expense, fontSize: 13, fontWeight: FontWeight.bold)), // Logika asli dipertahankan[cite: 4]
+                Text(_error!, style: TextStyle(color: AppColors.expense(context), fontSize: 13, fontWeight: FontWeight.bold)), // Logika asli dipertahankan[cite: 4]
               ],
               const SizedBox(height: 24),
               
@@ -388,11 +388,11 @@ class _TransactionFormState extends State<_TransactionForm> {
                       onPressed: () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        foregroundColor: AppColors.muted,
-                        side: BorderSide(color: AppColors.cardBorder),
+                        foregroundColor: AppColors.muted(context),
+                        side: BorderSide(color: AppColors.cardBorder(context)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: const Text('Batal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      child: Text('Batal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -400,7 +400,7 @@ class _TransactionFormState extends State<_TransactionForm> {
                     child: ElevatedButton(
                       onPressed: _saving ? null : _submit, // Logika asli dipertahankan[cite: 4]
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accent,
+                        backgroundColor: AppColors.accent(context),
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -408,7 +408,7 @@ class _TransactionFormState extends State<_TransactionForm> {
                       ),
                       child: _saving // Logika asli dipertahankan[cite: 4]
                           ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('Simpan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          : Text('Simpan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                   ),
                 ],
@@ -443,7 +443,7 @@ class _TransactionFormState extends State<_TransactionForm> {
             child: Text(
               label, 
               style: TextStyle(
-                color: selected ? color : AppColors.muted, 
+                color: selected ? color : AppColors.muted(context), 
                 fontWeight: FontWeight.bold, 
                 fontSize: 13,
               ),
@@ -456,15 +456,15 @@ class _TransactionFormState extends State<_TransactionForm> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.cardBorder.withOpacity(0.1),
+        color: AppColors.cardBorder(context).withOpacity(0.1),
         borderRadius: BorderRadius.circular(14), 
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+        border: Border.all(color: AppColors.cardBorder(context).withOpacity(0.5)),
       ),
       clipBehavior: Clip.antiAlias,
       child: Row(children: [
-        option('income', 'Pemasukan', AppColors.income), 
+        option('income', 'Pemasukan', AppColors.income(context)), 
         const SizedBox(width: 6),
-        option('expense', 'Pengeluaran', AppColors.expense),
+        option('expense', 'Pengeluaran', AppColors.expense(context)),
       ]),
     );
   }

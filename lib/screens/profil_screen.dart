@@ -6,6 +6,8 @@ import '../core/api_client.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/theme_toggle_button.dart';
 import 'login_screen.dart';
 
 class ProfilScreen extends StatefulWidget {
@@ -25,18 +27,21 @@ class _ProfilScreenState extends State<ProfilScreen> {
   final _confirmPassword = TextEditingController();
 
   bool _saving = false; // Logika asli dipertahankan[cite: 5]
-  bool _saved = false;  // Logika asli dipertahankan[cite: 5]
-  String? _error;       // Logika asli dipertahankan[cite: 5]
-  
+  bool _saved = false; // Logika asli dipertahankan[cite: 5]
+  String? _error; // Logika asli dipertahankan[cite: 5]
+
   // Variabel baru untuk menampung gambar sementara secara lokal
   Uint8List? _localAvatarBytes;
 
   @override
   void initState() {
     super.initState();
-    final user = context.read<AuthProvider>().user; // Logika asli dipertahankan[cite: 5]
-    _name = TextEditingController(text: user?.name ?? ''); // Logika asli dipertahankan[cite: 5]
-    _email = TextEditingController(text: user?.email ?? ''); // Logika asli dipertahankan[cite: 5]
+    final user =
+        context.read<AuthProvider>().user; // Logika asli dipertahankan[cite: 5]
+    _name = TextEditingController(
+        text: user?.name ?? ''); // Logika asli dipertahankan[cite: 5]
+    _email = TextEditingController(
+        text: user?.email ?? ''); // Logika asli dipertahankan[cite: 5]
   }
 
   @override
@@ -49,9 +54,11 @@ class _ProfilScreenState extends State<ProfilScreen> {
     super.dispose();
   }
 
-  Future<void> _pickPhoto() async { // Logika asli dipertahankan[cite: 5]
+  Future<void> _pickPhoto() async {
+    // Logika asli dipertahankan[cite: 5]
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final picked =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked == null || !mounted) return;
 
     final bytes = await picked.readAsBytes();
@@ -63,17 +70,21 @@ class _ProfilScreenState extends State<ProfilScreen> {
     });
 
     try {
-      await context.read<AuthProvider>().uploadAvatar(bytes, picked.name); // Logika asli dipertahankan[cite: 5]
+      await context.read<AuthProvider>().uploadAvatar(
+          bytes, picked.name); // Logika asli dipertahankan[cite: 5]
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal mengunggah foto ke server: ${extractErrorMessage(e)}')),
+          SnackBar(
+              content: Text(
+                  'Gagal mengunggah foto ke server: ${extractErrorMessage(e)}')),
         );
       }
     }
   }
 
-  Future<void> _submit() async { // Logika asli dipertahankan[cite: 5]
+  Future<void> _submit() async {
+    // Logika asli dipertahankan[cite: 5]
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -85,10 +96,12 @@ class _ProfilScreenState extends State<ProfilScreen> {
     try {
       final auth = context.read<AuthProvider>();
 
-      await auth.updateProfile(_name.text.trim(), _email.text.trim()); // Logika asli dipertahankan[cite: 5]
+      await auth.updateProfile(_name.text.trim(),
+          _email.text.trim()); // Logika asli dipertahankan[cite: 5]
 
       if (_newPassword.text.isNotEmpty) {
-        await auth.changePassword( // Logika asli dipertahankan[cite: 5]
+        await auth.changePassword(
+          // Logika asli dipertahankan[cite: 5]
           currentPassword: _currentPassword.text,
           newPassword: _newPassword.text,
           newPasswordConfirmation: _confirmPassword.text,
@@ -106,7 +119,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
     }
   }
 
-  Future<void> _logout() async { // Logika asli dipertahankan[cite: 5]
+  Future<void> _logout() async {
+    // Logika asli dipertahankan[cite: 5]
     await context.read<AuthProvider>().logout();
     context.read<AppProvider>().reset();
     if (mounted) {
@@ -120,13 +134,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final isWide = constraints.maxWidth >= 700; // Logika asli dipertahankan[cite: 5]
+      final isWide =
+          constraints.maxWidth >= 700; // Logika asli dipertahankan[cite: 5]
 
       final summaryCard = _ProfileSummaryCard(
-        onPickPhoto: _pickPhoto, 
+        onPickPhoto: _pickPhoto,
         onLogout: _logout,
         localBytes: _localAvatarBytes, // Kirim bytes lokal ke UI Card
-      ); 
+      );
       final formCard = _ProfileFormCard(
         formKey: _formKey,
         name: _name,
@@ -145,10 +160,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Profil',
               style: TextStyle(
-                color: AppColors.text,
+                color: AppColors.text(context),
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
@@ -183,17 +198,22 @@ class _ProfileSummaryCard extends StatelessWidget {
   final VoidCallback onPickPhoto;
   final VoidCallback onLogout;
   final Uint8List? localBytes; // Variabel baru ditambahkan
-  
+
   const _ProfileSummaryCard({
-    required this.onPickPhoto, 
+    required this.onPickPhoto,
     required this.onLogout,
     this.localBytes,
   });
 
-  ImageProvider? _avatarImage(AuthProvider auth) { // Logika asli dipertahankan[cite: 5]
-    if (localBytes != null) return MemoryImage(localBytes!); // Prioritaskan cache lokal yang baru dipilih
-    if (auth.avatarPreview != null) return MemoryImage(auth.avatarPreview!); // Fallback 1[cite: 5]
-    if (auth.user?.avatarUrl != null) return NetworkImage(auth.user!.avatarUrl!); // Fallback 2[cite: 5]
+  ImageProvider? _avatarImage(AuthProvider auth) {
+    // Logika asli dipertahankan[cite: 5]
+    if (localBytes != null)
+      return MemoryImage(
+          localBytes!); // Prioritaskan cache lokal yang baru dipilih
+    if (auth.avatarPreview != null)
+      return MemoryImage(auth.avatarPreview!); // Fallback 1[cite: 5]
+    if (auth.user?.avatarUrl != null)
+      return NetworkImage(auth.user!.avatarUrl!); // Fallback 2[cite: 5]
     return null;
   }
 
@@ -202,13 +222,18 @@ class _ProfileSummaryCard extends StatelessWidget {
     final auth = context.watch<AuthProvider>(); // Logika asli dipertahankan
     final user = auth.user;
     final initials = (user?.name.isNotEmpty == true)
-        ? user!.name.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0].toUpperCase()).join()
+        ? user!.name
+            .trim()
+            .split(RegExp(r'\s+'))
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
         : 'P';
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.card(context),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -225,14 +250,20 @@ class _ProfileSummaryCard extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.accent.withOpacity(0.3), width: 3),
+                  border: Border.all(
+                      color: AppColors.accent(context).withOpacity(0.3),
+                      width: 3),
                 ),
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundColor: AppColors.accent.withOpacity(0.12),
+                  backgroundColor: AppColors.accent(context).withOpacity(0.12),
                   backgroundImage: _avatarImage(auth),
                   child: _avatarImage(auth) == null
-                      ? Text(initials, style: const TextStyle(color: AppColors.accent, fontSize: 32, fontWeight: FontWeight.w800))
+                      ? Text(initials,
+                          style: TextStyle(
+                              color: AppColors.accent(context),
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800))
                       : null,
                 ),
               ),
@@ -242,8 +273,10 @@ class _ProfileSummaryCard extends StatelessWidget {
                     radius: 50,
                     backgroundColor: Colors.black.withOpacity(0.4),
                     child: const SizedBox(
-                      width: 24, height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2.5, color: Colors.white),
                     ),
                   ),
                 ),
@@ -256,18 +289,20 @@ class _ProfileSummaryCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.accent,
+                      color: AppColors.accent(context),
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.card, width: 2.5),
+                      border: Border.all(
+                          color: AppColors.card(context), width: 2.5),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.accent.withOpacity(0.3),
+                          color: AppColors.accent(context).withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                    child: const Icon(Icons.camera_alt_rounded,
+                        size: 16, color: Colors.white),
                   ),
                 ),
               ),
@@ -277,33 +312,72 @@ class _ProfileSummaryCard extends StatelessWidget {
           Text(
             user?.name.isNotEmpty == true ? user!.name : 'Pengguna',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.3),
+            style: TextStyle(
+                color: AppColors.text(context),
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+                letterSpacing: -0.3),
           ),
           const SizedBox(height: 4),
           Text(
             user?.email ?? '-',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.muted, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                color: AppColors.muted(context),
+                fontSize: 13,
+                fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
           TextButton(
             onPressed: onPickPhoto,
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.accent,
+              foregroundColor: AppColors.accent(context),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Ubah Foto Profil', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+            child: const Text('Ubah Foto Profil',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(height: 8),
+          // Dark Mode Section
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.cardBorder(context)),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tema',
+                  style: TextStyle(
+                    color: AppColors.text(context),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const ThemeToggleButton(),
+              ],
+            ),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onLogout,
-            icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.expense),
-            label: const Text('Keluar Akun', style: TextStyle(color: AppColors.expense, fontWeight: FontWeight.bold, fontSize: 13)),
+            icon: Icon(Icons.logout_rounded,
+                size: 18, color: AppColors.expense(context)),
+            label: Text('Keluar Akun',
+                style: TextStyle(
+                    color: AppColors.expense(context),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13)),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              side: BorderSide(color: AppColors.expense.withOpacity(0.5)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              side: BorderSide(
+                  color: AppColors.expense(context).withOpacity(0.5)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
@@ -340,28 +414,33 @@ class _ProfileFormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width >= 700; // Logika asli dipertahankan[cite: 5]
+    final isWide = MediaQuery.of(context).size.width >=
+        700; // Logika asli dipertahankan[cite: 5]
 
-    InputDecoration fieldDecoration({required String labelText, String? hintText}) {
+    InputDecoration fieldDecoration(
+        {required String labelText, String? hintText}) {
       return InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
-        floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+        labelStyle: TextStyle(
+            color: AppColors.muted(context), fontWeight: FontWeight.w500),
+        floatingLabelStyle: TextStyle(
+            color: AppColors.accent(context), fontWeight: FontWeight.bold),
         filled: true,
-        fillColor: AppColors.cardBorder.withOpacity(0.15),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: AppColors.cardBorder(context).withOpacity(0.15),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+          borderSide: BorderSide(color: AppColors.accent(context), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.expense, width: 1),
+          borderSide: BorderSide(color: AppColors.expense(context), width: 1),
         ),
       );
     }
@@ -369,7 +448,7 @@ class _ProfileFormCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.card(context),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -390,16 +469,23 @@ class _ProfileFormCard extends StatelessWidget {
               final sideBySide = c.maxWidth >= 480;
               final nameField = TextFormField(
                 controller: name,
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    color: AppColors.text(context),
+                    fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Nama Lengkap'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
               );
               final emailField = TextFormField(
                 controller: email,
                 keyboardType: TextInputType.emailAddress,
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    color: AppColors.text(context),
+                    fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Email Aktif'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Email wajib diisi' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Email wajib diisi'
+                    : null,
               );
               if (sideBySide) {
                 return Row(children: [
@@ -408,25 +494,32 @@ class _ProfileFormCard extends StatelessWidget {
                   Expanded(child: emailField),
                 ]);
               }
-              return Column(children: [nameField, const SizedBox(height: 14), emailField]);
+              return Column(children: [
+                nameField,
+                const SizedBox(height: 14),
+                emailField
+              ]);
             }),
-
             const SizedBox(height: 32),
             const _SectionLabel('GANTI PASSWORD (OPSIONAL)'),
             const SizedBox(height: 6),
             Text(
               'Kosongkan kolom di bawah ini jika kamu tidak ingin melakukan perubahan password.',
-              style: TextStyle(color: AppColors.muted, fontSize: 12, height: 1.4),
+              style: TextStyle(
+                  color: AppColors.muted(context), fontSize: 12, height: 1.4),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: currentPassword,
               obscureText: true,
-              style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: AppColors.text(context), fontWeight: FontWeight.w600),
               decoration: fieldDecoration(labelText: 'Password Saat Ini'),
               validator: (v) {
                 if (newPassword.text.isEmpty) return null;
-                return (v == null || v.isEmpty) ? 'Masukkan password saat ini' : null;
+                return (v == null || v.isEmpty)
+                    ? 'Masukkan password saat ini'
+                    : null;
               },
             ),
             const SizedBox(height: 14),
@@ -435,7 +528,9 @@ class _ProfileFormCard extends StatelessWidget {
               final newPassField = TextFormField(
                 controller: newPassword,
                 obscureText: true,
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    color: AppColors.text(context),
+                    fontWeight: FontWeight.w600),
                 decoration: fieldDecoration(labelText: 'Password Baru'),
                 validator: (v) {
                   if (v == null || v.isEmpty) return null;
@@ -445,11 +540,16 @@ class _ProfileFormCard extends StatelessWidget {
               final confirmField = TextFormField(
                 controller: confirmPassword,
                 obscureText: true,
-                style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
-                decoration: fieldDecoration(labelText: 'Konfirmasi Password Baru'),
+                style: TextStyle(
+                    color: AppColors.text(context),
+                    fontWeight: FontWeight.w600),
+                decoration:
+                    fieldDecoration(labelText: 'Konfirmasi Password Baru'),
                 validator: (v) {
                   if (newPassword.text.isEmpty) return null;
-                  return (v != newPassword.text) ? 'Konfirmasi tidak cocok' : null;
+                  return (v != newPassword.text)
+                      ? 'Konfirmasi tidak cocok'
+                      : null;
                 },
               );
               if (sideBySide) {
@@ -459,14 +559,20 @@ class _ProfileFormCard extends StatelessWidget {
                   Expanded(child: confirmField),
                 ]);
               }
-              return Column(children: [newPassField, const SizedBox(height: 14), confirmField]);
+              return Column(children: [
+                newPassField,
+                const SizedBox(height: 14),
+                confirmField
+              ]);
             }),
-
             if (error != null) ...[
               const SizedBox(height: 16),
-              Text(error!, style: const TextStyle(color: AppColors.expense, fontSize: 13, fontWeight: FontWeight.bold)),
+              Text(error!,
+                  style: TextStyle(
+                      color: AppColors.expense(context),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold)),
             ],
-
             const SizedBox(height: 32),
             Align(
               alignment: Alignment.centerRight,
@@ -476,17 +582,25 @@ class _ProfileFormCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: saving ? null : onSubmit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: saved ? const Color(0xFF2EC4B6) : AppColors.accent,
+                    backgroundColor: saved
+                        ? const Color(0xFF2EC4B6)
+                        : AppColors.accent(context),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                   child: saving
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
                       : Text(
                           saved ? 'Tersimpan ✓' : 'Simpan Perubahan',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 14),
                         ),
                 ),
               ),
@@ -506,10 +620,10 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
-        color: AppColors.accent, 
-        fontSize: 11, 
-        fontWeight: FontWeight.w900, 
+      style: TextStyle(
+        color: AppColors.accent(context),
+        fontSize: 11,
+        fontWeight: FontWeight.w900,
         letterSpacing: 1.0,
       ),
     );
