@@ -15,3 +15,12 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Dark Mode Notes
+
+- Theme state is managed by `ThemeProvider` and persisted with `SharedPreferences`.
+- The app defaults to `ThemeMode.system`, so first launch follows the device theme automatically.
+- Light and dark color tokens live in `lib/core/theme.dart`.
+- To change future colors, update the matching token in `LightColors` or `DarkColors`, then reuse `AppColors.<token>(context)` inside widgets.
+- The manual theme switch is available in the profile screen and supports `system`, `light`, and `dark`.
+- If a UI bug appears only in one mode, check for hardcoded `Colors.*` values in that widget and replace them with `AppColors` or theme-based colors.

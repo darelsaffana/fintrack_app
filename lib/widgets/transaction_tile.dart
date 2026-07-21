@@ -18,14 +18,14 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = transaction;
     final isIncome = t.type == 'income';
-    final color = t.category != null ? hexToColor(t.category!.color) : (isIncome ? AppColors.income : AppColors.expense);
+    final color = t.category != null ? hexToColor(t.category!.color) : (isIncome ? AppColors.income(context) : AppColors.expense(context));
     final title = (t.description != null && t.description!.trim().isNotEmpty) ? t.description! : (t.category?.name ?? 'Transaksi');
     final dateStr = '${t.date.day} ${_monthName(t.date.month)} ${t.date.year}';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.border)),
+        border: Border(top: BorderSide(color: AppColors.border(context))),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start, // Ratakan atas agar sejajar ikon
@@ -63,7 +63,7 @@ class TransactionTile extends StatelessWidget {
                         maxLines: 1, 
                         overflow: TextOverflow.ellipsis, 
                         style: TextStyle(
-                          color: AppColors.text, 
+                          color: AppColors.text(context), 
                           fontWeight: FontWeight.w600, 
                           fontSize: 14,
                         ),
@@ -73,7 +73,7 @@ class TransactionTile extends StatelessWidget {
                     Text(
                       '${isIncome ? "+" : "-"}${formatRupiah(t.amount)}',
                       style: TextStyle(
-                        color: isIncome ? AppColors.income : AppColors.expense, 
+                        color: isIncome ? AppColors.income(context) : AppColors.expense(context), 
                         fontWeight: FontWeight.w700, 
                         fontSize: 14,
                       ),
@@ -88,11 +88,11 @@ class TransactionTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${t.category?.name ?? "-"} · $dateStr',
+                        '${t.category?.name ?? "-"} Â· $dateStr',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: AppColors.mutedDim, 
+                          color: AppColors.mutedDim(context), 
                           fontSize: 12,
                         ),
                       ),
@@ -108,7 +108,7 @@ class TransactionTile extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               child: Padding(
                                 padding: const EdgeInsets.all(6),
-                                child: Icon(Icons.edit_outlined, size: 16, color: AppColors.muted),
+                                child: Icon(Icons.edit_outlined, size: 16, color: AppColors.muted(context)),
                               ),
                             ),
                           if (onDelete != null)
@@ -117,7 +117,7 @@ class TransactionTile extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               child: Padding(
                                 padding: const EdgeInsets.all(6),
-                                child: Icon(Icons.delete_outline, size: 16, color: AppColors.muted),
+                                child: Icon(Icons.delete_outline, size: 16, color: AppColors.muted(context)),
                               ),
                             ),
                         ],

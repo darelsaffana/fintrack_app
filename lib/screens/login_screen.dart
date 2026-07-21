@@ -46,11 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
     InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon}) {
       return InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: AppColors.muted, fontWeight: FontWeight.w500),
-        floatingLabelStyle: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
-        prefixIcon: Icon(prefixIcon, color: AppColors.muted, size: 20),
+        labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
+        floatingLabelStyle: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold),
+        prefixIcon: Icon(prefixIcon, color: AppColors.muted(context), size: 20),
         filled: true,
-        fillColor: AppColors.cardBorder.withOpacity(0.15),
+        fillColor: AppColors.cardBorder(context).withOpacity(0.15),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -58,21 +58,21 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+          borderSide: BorderSide(color: AppColors.accent(context), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.expense, width: 1),
+          borderSide: BorderSide(color: AppColors.expense(context), width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.expense, width: 1.5),
+          borderSide: BorderSide(color: AppColors.expense(context), width: 1.5),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp, 
+      backgroundColor: AppColors.bgApp(context), 
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -81,9 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: AppColors.card(context),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: AppColors.cardBorder.withOpacity(0.6)),
+                border: Border.all(color: AppColors.cardBorder(context).withOpacity(0.6)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.15),
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontSize: 30, 
                             fontWeight: FontWeight.w900,
-                            color: AppColors.text,
+                            color: AppColors.text(context),
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Masuk untuk mulai catat keuanganmu',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: AppColors.muted,
+                            color: AppColors.muted(context),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                       decoration: fieldDecoration(
                         labelText: 'Email', 
                         prefixIcon: Icons.email_rounded,
@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _password,
                       obscureText: true,
-                      style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                       decoration: fieldDecoration(
                         labelText: 'Password', 
                         prefixIcon: Icons.lock_rounded,
@@ -165,14 +165,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.expense.withOpacity(0.1),
+                          color: AppColors.expense(context).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppColors.expense.withOpacity(0.2)),
+                          border: Border.all(color: AppColors.expense(context).withOpacity(0.2)),
                         ),
                         child: Text(
                           _error!, 
-                          style: const TextStyle(
-                            color: AppColors.expense, 
+                          style: TextStyle(
+                            color: AppColors.expense(context), 
                             fontSize: 13, 
                             fontWeight: FontWeight.bold,
                           ),
@@ -186,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: _loading ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accent,
+                        backgroundColor: AppColors.accent(context),
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 20, 
                               child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                             )
-                          : const Text(
+                          : Text(
                               'Masuk', 
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                             ),
@@ -207,11 +207,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextButton(
                       onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
                       style: TextButton.styleFrom(
-                        foregroundColor: AppColors.accent,
+                        foregroundColor: AppColors.accent(context),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Belum punya akun? Daftar di sini', 
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       ),

@@ -11,16 +11,16 @@ class EmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24), // Tambahin horizontal padding biar gak mentok pinggir
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.card(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.cardBorder(context)),
       ),
       alignment: Alignment.center,
       child: Text(
         message, 
         textAlign: TextAlign.center, // <--- INI BIAR TEKSNYA RATA TENGAH
         style: TextStyle(
-          color: AppColors.mutedDim, 
+          color: AppColors.mutedDim(context), 
           fontSize: 14
         ),
       ),
