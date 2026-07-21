@@ -286,7 +286,7 @@ class _CategoryFormState extends State<_CategoryForm> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   late String _type;
-  late Color _color;
+  Color? _color;
   bool _saving = false;
   String? _error;
 
@@ -295,11 +295,14 @@ class _CategoryFormState extends State<_CategoryForm> {
     super.initState();
     _name.text = widget.existing?.name ?? ''; // Logika asli dipertahankan[cite: 2]
     _type = widget.existing?.type ?? widget.defaultType; // Logika asli dipertahankan[cite: 2]
-    _color = widget.existing != null ? hexToColor(widget.existing!.color) : AppColors.categoryPalette(context).first; // Logika asli dipertahankan[cite: 2]
+    if (widget.existing != null) {
+      _color = hexToColor(widget.existing!.color);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    _color ??= AppColors.categoryPalette(context).first;
     return Padding(
       padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
       child: SingleChildScrollView(
@@ -374,10 +377,10 @@ class _CategoryFormState extends State<_CategoryForm> {
                         decoration: BoxDecoration(
                           color: c, 
                           shape: BoxShape.circle,
-                          boxShadow: _color.value == c.value 
+                          boxShadow: _color!.value == c.value 
                               ? [BoxShadow(color: c.withOpacity(0.4), blurRadius: 6, offset: const Offset(0, 3))]
                               : null,
-                          border: _color.value == c.value 
+                          border: _color!.value == c.value 
                               ? Border.all(color: Colors.white, width: 2.5) 
                               : null,
                         ),
@@ -468,9 +471,9 @@ class _CategoryFormState extends State<_CategoryForm> {
     try {
       final provider = context.read<AppProvider>(); // Logika asli dipertahankan[cite: 2]
       if (widget.existing == null) {
-        await provider.addCategory(_name.text.trim(), _type, _colorToHex(_color)); // Logika asli dipertahankan[cite: 2]
+        await provider.addCategory(_name.text.trim(), _type, _colorToHex(_color!)); // Logika asli dipertahankan[cite: 2]
       } else {
-        await provider.editCategory(widget.existing!.id, _name.text.trim(), _type, _colorToHex(_color)); // Logika asli dipertahankan[cite: 2]
+        await provider.editCategory(widget.existing!.id, _name.text.trim(), _type, _colorToHex(_color!)); // Logika asli dipertahankan[cite: 2]
       }
       if (mounted) Navigator.pop(context); // Logika asli dipertahankan[cite: 2]
     } catch (e) {
