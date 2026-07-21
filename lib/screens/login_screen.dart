@@ -140,7 +140,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: 'Email', 
                         prefixIcon: Icons.email_rounded,
                       ),
-                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Email wajib diisi' : null,
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty) return 'Email wajib diisi';
+                        if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(v)) {
+                          return 'Format email tidak valid (contoh: nama@email.com)';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
