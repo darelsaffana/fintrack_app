@@ -88,51 +88,171 @@ class DarkColors {
   ];
 }
 
-/// Helper to get colors based on current brightness
-class AppColors {
-  static bool isDark(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark;
+class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
+  final MaterialColor primarySwatch;
+  final Color bgApp;
+  final Color sidebar;
+  final Color card;
+  final Color cardBorder;
+  final Color border;
+  final Color text;
+  final Color muted;
+  final Color mutedDim;
+  final Color income;
+  final Color expense;
+  final Color balance;
+  final Color accent;
+  final Color accentSecondary;
+  final List<Color> categoryPalette;
+
+  const AppColorsExtension({
+    required this.primarySwatch,
+    required this.bgApp,
+    required this.sidebar,
+    required this.card,
+    required this.cardBorder,
+    required this.border,
+    required this.text,
+    required this.muted,
+    required this.mutedDim,
+    required this.income,
+    required this.expense,
+    required this.balance,
+    required this.accent,
+    required this.accentSecondary,
+    required this.categoryPalette,
+  });
+
+  @override
+  ThemeExtension<AppColorsExtension> copyWith({
+    MaterialColor? primarySwatch,
+    Color? bgApp,
+    Color? sidebar,
+    Color? card,
+    Color? cardBorder,
+    Color? border,
+    Color? text,
+    Color? muted,
+    Color? mutedDim,
+    Color? income,
+    Color? expense,
+    Color? balance,
+    Color? accent,
+    Color? accentSecondary,
+    List<Color>? categoryPalette,
+  }) {
+    return AppColorsExtension(
+      primarySwatch: primarySwatch ?? this.primarySwatch,
+      bgApp: bgApp ?? this.bgApp,
+      sidebar: sidebar ?? this.sidebar,
+      card: card ?? this.card,
+      cardBorder: cardBorder ?? this.cardBorder,
+      border: border ?? this.border,
+      text: text ?? this.text,
+      muted: muted ?? this.muted,
+      mutedDim: mutedDim ?? this.mutedDim,
+      income: income ?? this.income,
+      expense: expense ?? this.expense,
+      balance: balance ?? this.balance,
+      accent: accent ?? this.accent,
+      accentSecondary: accentSecondary ?? this.accentSecondary,
+      categoryPalette: categoryPalette ?? this.categoryPalette,
+    );
   }
 
-  static MaterialColor primarySwatch(BuildContext context) =>
-      isDark(context) ? DarkColors.primarySwatch : LightColors.primarySwatch;
-  static Color bgApp(BuildContext context) =>
-      isDark(context) ? DarkColors.bgApp : LightColors.bgApp;
-  static Color sidebar(BuildContext context) =>
-      isDark(context) ? DarkColors.sidebar : LightColors.sidebar;
-  static Color card(BuildContext context) =>
-      isDark(context) ? DarkColors.card : LightColors.card;
-  static Color cardBorder(BuildContext context) =>
-      isDark(context) ? DarkColors.cardBorder : LightColors.cardBorder;
-  static Color border(BuildContext context) =>
-      isDark(context) ? DarkColors.border : LightColors.border;
-  static Color text(BuildContext context) =>
-      isDark(context) ? DarkColors.text : LightColors.text;
-  static Color muted(BuildContext context) =>
-      isDark(context) ? DarkColors.muted : LightColors.muted;
-  static Color mutedDim(BuildContext context) =>
-      isDark(context) ? DarkColors.mutedDim : LightColors.mutedDim;
+  @override
+  ThemeExtension<AppColorsExtension> lerp(
+      covariant ThemeExtension<AppColorsExtension>? other, double t) {
+    if (other is! AppColorsExtension) {
+      return this;
+    }
+    List<Color> lerpedPalette = [];
+    for (int i = 0; i < categoryPalette.length; i++) {
+      lerpedPalette.add(Color.lerp(categoryPalette[i], other.categoryPalette[i], t)!);
+    }
+    return AppColorsExtension(
+      primarySwatch: t < 0.5 ? primarySwatch : other.primarySwatch,
+      bgApp: Color.lerp(bgApp, other.bgApp, t)!,
+      sidebar: Color.lerp(sidebar, other.sidebar, t)!,
+      card: Color.lerp(card, other.card, t)!,
+      cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
+      border: Color.lerp(border, other.border, t)!,
+      text: Color.lerp(text, other.text, t)!,
+      muted: Color.lerp(muted, other.muted, t)!,
+      mutedDim: Color.lerp(mutedDim, other.mutedDim, t)!,
+      income: Color.lerp(income, other.income, t)!,
+      expense: Color.lerp(expense, other.expense, t)!,
+      balance: Color.lerp(balance, other.balance, t)!,
+      accent: Color.lerp(accent, other.accent, t)!,
+      accentSecondary: Color.lerp(accentSecondary, other.accentSecondary, t)!,
+      categoryPalette: lerpedPalette,
+    );
+  }
+}
 
-  static Color income(BuildContext context) =>
-      isDark(context) ? DarkColors.income : LightColors.income;
-  static Color expense(BuildContext context) =>
-      isDark(context) ? DarkColors.expense : LightColors.expense;
-  static Color balance(BuildContext context) =>
-      isDark(context) ? DarkColors.balance : LightColors.balance;
-  static Color accent(BuildContext context) =>
-      isDark(context) ? DarkColors.accent : LightColors.accent;
-  static Color accentSecondary(BuildContext context) => isDark(context)
-      ? DarkColors.accentSecondary
-      : LightColors.accentSecondary;
+final appColorsLight = AppColorsExtension(
+  primarySwatch: LightColors.primarySwatch,
+  bgApp: LightColors.bgApp,
+  sidebar: LightColors.sidebar,
+  card: LightColors.card,
+  cardBorder: LightColors.cardBorder,
+  border: LightColors.border,
+  text: LightColors.text,
+  muted: LightColors.muted,
+  mutedDim: LightColors.mutedDim,
+  income: LightColors.income,
+  expense: LightColors.expense,
+  balance: LightColors.balance,
+  accent: LightColors.accent,
+  accentSecondary: LightColors.accentSecondary,
+  categoryPalette: LightColors.categoryPalette,
+);
 
-  static List<Color> categoryPalette(BuildContext context) => isDark(context)
-      ? DarkColors.categoryPalette
-      : LightColors.categoryPalette;
+final appColorsDark = AppColorsExtension(
+  primarySwatch: DarkColors.primarySwatch,
+  bgApp: DarkColors.bgApp,
+  sidebar: DarkColors.sidebar,
+  card: DarkColors.card,
+  cardBorder: DarkColors.cardBorder,
+  border: DarkColors.border,
+  text: DarkColors.text,
+  muted: DarkColors.muted,
+  mutedDim: DarkColors.mutedDim,
+  income: DarkColors.income,
+  expense: DarkColors.expense,
+  balance: DarkColors.balance,
+  accent: DarkColors.accent,
+  accentSecondary: DarkColors.accentSecondary,
+  categoryPalette: DarkColors.categoryPalette,
+);
+
+/// Helper to get colors smoothly animated via ThemeExtension
+class AppColors {
+  static AppColorsExtension _ext(BuildContext context) => Theme.of(context).extension<AppColorsExtension>()!;
+
+  static MaterialColor primarySwatch(BuildContext context) => _ext(context).primarySwatch;
+  static Color bgApp(BuildContext context) => _ext(context).bgApp;
+  static Color sidebar(BuildContext context) => _ext(context).sidebar;
+  static Color card(BuildContext context) => _ext(context).card;
+  static Color cardBorder(BuildContext context) => _ext(context).cardBorder;
+  static Color border(BuildContext context) => _ext(context).border;
+  static Color text(BuildContext context) => _ext(context).text;
+  static Color muted(BuildContext context) => _ext(context).muted;
+  static Color mutedDim(BuildContext context) => _ext(context).mutedDim;
+
+  static Color income(BuildContext context) => _ext(context).income;
+  static Color expense(BuildContext context) => _ext(context).expense;
+  static Color balance(BuildContext context) => _ext(context).balance;
+  static Color accent(BuildContext context) => _ext(context).accent;
+  static Color accentSecondary(BuildContext context) => _ext(context).accentSecondary;
+
+  static List<Color> categoryPalette(BuildContext context) => _ext(context).categoryPalette;
 }
 
 ThemeData buildLightTheme() {
   final base = ThemeData.light(useMaterial3: true);
   return base.copyWith(
+    extensions: [appColorsLight],
     scaffoldBackgroundColor: LightColors.bgApp,
     colorScheme: base.colorScheme.copyWith(
       primary: LightColors.accent,
@@ -184,6 +304,7 @@ ThemeData buildLightTheme() {
 ThemeData buildDarkTheme() {
   final base = ThemeData.dark(useMaterial3: true);
   return base.copyWith(
+    extensions: [appColorsDark],
     scaffoldBackgroundColor: DarkColors.bgApp,
     colorScheme: base.colorScheme.copyWith(
       primary: DarkColors.accent,
