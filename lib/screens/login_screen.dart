@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _loading = false;
   String? _error;
+  bool _obscurePassword = true;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -43,12 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon}) {
+    InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon, Widget? suffixIcon}) {
       return InputDecoration(
         labelText: labelText,
         labelStyle: TextStyle(color: AppColors.muted(context), fontWeight: FontWeight.w500),
         floatingLabelStyle: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold),
         prefixIcon: Icon(prefixIcon, color: AppColors.muted(context), size: 20),
+        suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.cardBorder(context).withOpacity(0.15),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -151,11 +153,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _password,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                       decoration: fieldDecoration(
                         labelText: 'Password', 
                         prefixIcon: Icons.lock_rounded,
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.muted(context), size: 20),
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        ),
                       ),
                       validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
                     ),
