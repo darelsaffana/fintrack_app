@@ -105,15 +105,15 @@ class _CategoryReportCard extends StatelessWidget {
             SizedBox(
               height: 200,
               child: PieChart(PieChartData(
-                sectionsSpace: 4, // Jarak antar potongan pie chart direnggangkan sedikit agar lebih estetik
-                centerSpaceRadius: 52, // Area tengah dibuat sedikit lebih besar untuk tampilan donut chart yang minimalis
+                sectionsSpace: 0, // Diubah menjadi 0 agar data bernilai kecil (1%) tidak hilang/terpotong
+                centerSpaceRadius: 0, // Diubah ke 0 agar menjadi Pie Chart penuh (bukan Donut)
                 sections: [
                   for (final e in items)
                     PieChartSectionData(
-                      value: e.total, // Logika asli dipertahankan
-                      color: hexToColor(e.color), // Logika asli dipertahankan[cite: 3]
+                      value: e.total,
+                      color: hexToColor(e.color),
                       showTitle: false,
-                      radius: 32, // Ukuran ketebalan donat dikurangi sedikit agar terkesan modern dan tipis
+                      radius: 90, // Radius diperbesar karena hole di tengah sudah hilang
                     ),
                 ],
               )),
