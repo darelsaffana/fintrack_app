@@ -7,6 +7,8 @@ import '../providers/app_provider.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/transaction_tile.dart';
 
+// Tab "Transaksi": daftar semua transaksi user (bisa difilter semua/pemasukan/
+// pengeluaran), plus tombol tambah yang buka form _TransactionForm di bawah.
 class TransaksiScreen extends StatefulWidget {
   const TransaksiScreen({super.key});
 
@@ -15,13 +17,14 @@ class TransaksiScreen extends StatefulWidget {
 }
 
 class _TransaksiScreenState extends State<TransaksiScreen> {
-  String _filter = 'all'; // Logika asli dipertahankan
+  String _filter = 'all'; // filter aktif: 'all' / 'income' / 'expense'
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>(); // Logika asli dipertahankan
-    final list = provider.transactions.where((t) => _filter == 'all' || t.type == _filter).toList() // Logika asli dipertahankan
-      ..sort((a, b) => b.date.compareTo(a.date)); // Logika asli dipertahankan
+    final provider = context.watch<AppProvider>();
+    // Ambil transaksi sesuai filter, lalu urutkan dari yang tanggalnya paling baru.
+    final list = provider.transactions.where((t) => _filter == 'all' || t.type == _filter).toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
 
     return Padding(
       // Padding halaman luar disamakan agar layout lapang dan konsisten
@@ -123,7 +126,7 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
     );
   }
 
-  // Dialog konfirmasi hapus bergaya modern
+  // Konfirmasi dulu sebelum benar-benar hapus transaksi (DELETE /transactions/{id}).
   Future<void> _confirmDelete(BuildContext context, Transaction t) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -156,6 +159,8 @@ class _TransaksiScreenState extends State<TransaksiScreen> {
     }
   }
 
+  // Buka bottom sheet form tambah/ubah transaksi. `existing` null = mode
+  // tambah, diisi = mode ubah (form terisi otomatis dari data transaksi tsb).
   void _openForm(BuildContext context, {Transaction? existing}) {
     showModalBottomSheet(
       context: context,
@@ -218,7 +223,7 @@ class _TransactionForm extends StatefulWidget {
 
 class _TransactionFormState extends State<_TransactionForm> {
   final _formKey = GlobalKey<FormState>();
-  late String _type;
+  late String _type; // 'income' atau 'expense'
   int? _categoryId;
   final _amount = TextEditingController();
   final _description = TextEditingController();
@@ -229,20 +234,27 @@ class _TransactionFormState extends State<_TransactionForm> {
   @override
   void initState() {
     super.initState();
-    final e = widget.existing; // Logika asli dipertahankan[cite: 4]
-    _type = e?.type ?? 'expense'; // Logika asli dipertahankan[cite: 4]
-    _categoryId = e?.categoryId; // Logika asli dipertahankan[cite: 4]
-    _amount.text = e != null ? e.amount.toStringAsFixed(0) : ''; // Logika asli dipertahankan[cite: 4]
-    _description.text = e?.description ?? ''; // Logika asli dipertahankan[cite: 4]
-    _date = e?.date ?? DateTime.now(); // Logika asli dipertahankan[cite: 4]
+    // Mode ubah -> isi form dari data transaksi yang ada.
+    // Mode tambah -> default expense, hari ini, field lain kosong.
+    final e = widget.existing;
+    _type = e?.type ?? 'expense';
+    _categoryId = e?.categoryId;
+    _amount.text = e != null ? e.amount.toStringAsFixed(0) : '';
+    _description.text = e?.description ?? '';
+    _date = e?.date ?? DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>(); // Logika asli dipertahankan[cite: 4]
-    final cats = _type == 'income' ? provider.incomeCategories : provider.expenseCategories; // Logika asli dipertahankan[cite: 4]
+    final provider = context.watch<AppProvider>();
+    // Dropdown kategori cuma nampilin kategori sesuai tipe yang lagi dipilih
+    // (income/expense) — kategori pemasukan gak nyampur sama pengeluaran.
+    final cats = _type == 'income' ? provider.incomeCategories : provider.expenseCategories;
+    // Kalau kategori yang lagi kepilih ternyata gak ada di daftar tipe yang
+    // aktif sekarang (misal abis ganti tipe income->expense), reset ke
+    // kategori pertama yang tersedia biar gak nyangkut di ID yang gak valid.
     if (_categoryId == null || !cats.any((c) => c.id == _categoryId)) {
-      _categoryId = cats.isNotEmpty ? cats.first.id : null; // Logika asli dipertahankan[cite: 4]
+      _categoryId = cats.isNotEmpty ? cats.first.id : null;
     }
 
     return Padding(
@@ -423,10 +435,12 @@ class _TransactionFormState extends State<_TransactionForm> {
   // Tipe Toggle (Pemasukan / Pengeluaran) yang dimodernisasi
   Widget _typeToggle() {
     Widget option(String value, String label, Color color) {
-      final selected = _type == value; // Logika asli dipertahankan[cite: 4]
+      final selected = _type == value;
       return Expanded(
         child: InkWell(
-          onTap: () => setState(() { _type = value; _categoryId = null; }), // Logika asli dipertahankan[cite: 4]
+          // Ganti tipe -> _categoryId di-reset ke null, biar dropdown kategori
+          // di atas ke-refresh (lihat pengecekan cats.any(...) di build()).
+          onTap: () => setState(() { _type = value; _categoryId = null; }),
           borderRadius: BorderRadius.circular(10),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
@@ -493,22 +507,24 @@ Future<void> _pickDate() async {
     if (picked != null) setState(() => _date = picked); // Logika asli dipertahankan
   }
 
+  // Dipanggil saat tombol "Simpan" ditekan -> addTransaction (POST) atau
+  // editTransaction (PUT) tergantung mode tambah/ubah, lalu tutup bottom sheet.
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return; // Logika asli dipertahankan[cite: 4]
-    setState(() { _saving = true; _error = null; }); // Logika asli dipertahankan[cite: 4]
+    if (!_formKey.currentState!.validate()) return;
+    setState(() { _saving = true; _error = null; });
     try {
-      final provider = context.read<AppProvider>(); // Logika asli dipertahankan[cite: 4]
-      final amount = double.parse(_amount.text); // Logika asli dipertahankan[cite: 4]
+      final provider = context.read<AppProvider>();
+      final amount = double.parse(_amount.text);
       if (widget.existing == null) {
-        await provider.addTransaction(categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim()); // Logika asli dipertahankan[cite: 4]
+        await provider.addTransaction(categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim());
       } else {
-        await provider.editTransaction(widget.existing!.id, categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim()); // Logika asli dipertahankan[cite: 4]
+        await provider.editTransaction(widget.existing!.id, categoryId: _categoryId, type: _type, amount: amount, date: _date, description: _description.text.trim());
       }
-      if (mounted) Navigator.pop(context); // Logika asli dipertahankan[cite: 4]
+      if (mounted) Navigator.pop(context);
     } catch (e) {
-      setState(() => _error = extractErrorMessage(e)); // Logika asli dipertahankan[cite: 4]
+      setState(() => _error = extractErrorMessage(e));
     } finally {
-      if (mounted) setState(() => _saving = false); // Logika asli dipertahankan[cite: 4]
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

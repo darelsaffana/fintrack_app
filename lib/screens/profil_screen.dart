@@ -9,6 +9,8 @@ import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import 'login_screen.dart';
 
+// Tab "Profil": info akun + foto profil, dan menu ke Edit Profil, Ganti
+// Password, Tema Tampilan, dan Logout (masing-masing dibuka lewat bottom sheet).
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
 
@@ -17,8 +19,9 @@ class ProfilScreen extends StatefulWidget {
 }
 
 class _ProfilScreenState extends State<ProfilScreen> {
-  Uint8List? _localAvatarBytes;
+  Uint8List? _localAvatarBytes; // preview foto yg baru dipilih, sebelum upload selesai
 
+  // Buka galeri, ambil foto, langsung upload ke backend (POST /profile/avatar).
   Future<void> _pickPhoto() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
@@ -27,6 +30,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
     final bytes = await picked.readAsBytes();
     if (!mounted) return;
 
+    // Tampilkan foto barunya duluan (biar responsif), baru upload di background.
     setState(() {
       _localAvatarBytes = bytes;
     });
@@ -42,6 +46,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
     }
   }
 
+  // Logout: hapus token di backend & lokal, reset semua data yang ke-cache
+  // di AppProvider, lalu balik ke LoginScreen (history dihapus semua).
   Future<void> _logout() async {
     await context.read<AuthProvider>().logout();
     if (!mounted) return;
@@ -153,12 +159,16 @@ class _ProfilScreenState extends State<ProfilScreen> {
   }
 }
 
+// Kartu besar di atas: foto profil (bisa diganti lewat tombol kamera kecil),
+// nama, dan email user.
 class _ProfileHeaderCard extends StatelessWidget {
   final VoidCallback onPickPhoto;
   final Uint8List? localBytes;
 
   const _ProfileHeaderCard({required this.onPickPhoto, this.localBytes});
 
+  // Prioritas sumber gambar avatar: foto yang baru dipilih di halaman ini >
+  // preview upload yang lagi jalan di provider > foto tersimpan di server > null (pakai inisial).
   ImageProvider? _avatarImage(AuthProvider auth) {
     if (localBytes != null) return MemoryImage(localBytes!);
     if (auth.avatarPreview != null) return MemoryImage(auth.avatarPreview!);
@@ -263,6 +273,8 @@ class _ProfileHeaderCard extends StatelessWidget {
   }
 }
 
+// Satu baris menu di kartu daftar menu (Edit Profil, Keamanan, dst).
+// isDestructive=true dipakai buat "Keluar Akun" -> warnanya jadi merah.
 class _MenuTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -357,6 +369,7 @@ class _EditProfileModalState extends State<_EditProfileModal> {
     super.dispose();
   }
 
+  // Simpan perubahan nama/email -> PUT /profile.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _saving = true; _error = null; });
@@ -463,6 +476,9 @@ class _ChangePasswordModalState extends State<_ChangePasswordModal> {
     super.dispose();
   }
 
+  // Ganti password -> PUT /password. Beda dengan alur lupa password:
+  // di sini backend cek dulu apakah "Password Saat Ini" yang diketik cocok,
+  // baru boleh ganti ke password baru.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _saving = true; _error = null; });

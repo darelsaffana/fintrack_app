@@ -6,15 +6,18 @@ import '../providers/app_provider.dart';
 import '../services/report_service.dart';
 import '../widgets/empty_state.dart';
 
+// Tab "Laporan": 2 kartu grafik - pie chart pengeluaran per kategori
+// (dari GET /reports/by-category) dan bar chart pemasukan vs pengeluaran
+// per bulan (dari GET /reports/by-month).
 class LaporanScreen extends StatelessWidget {
   const LaporanScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>(); // Logika asli dipertahankan
+    final provider = context.watch<AppProvider>();
 
     if (provider.transactions.isEmpty) {
-      return const EmptyState(message: 'Belum ada data untuk ditampilkan. Tambahkan transaksi terlebih dahulu.'); // Logika asli dipertahankan
+      return const EmptyState(message: 'Belum ada data untuk ditampilkan. Tambahkan transaksi terlebih dahulu.');
     }
 
     return SingleChildScrollView(
@@ -34,10 +37,12 @@ class LaporanScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           
+          // LayoutBuilder -> tau lebar area yang tersedia, biar tata letak bisa
+          // ganti sendiri: layar lebar = 2 kartu berdampingan, sempit = ditumpuk.
           LayoutBuilder(builder: (context, constraints) {
-            final isWide = constraints.maxWidth >= 720; // Logika asli dipertahankan
-            final categoryCard = _CategoryReportCard(items: provider.categoryReport); // Logika asli dipertahankan
-            final monthCard = _MonthReportCard(items: provider.monthReport); // Logika asli dipertahankan
+            final isWide = constraints.maxWidth >= 720;
+            final categoryCard = _CategoryReportCard(items: provider.categoryReport);
+            final monthCard = _MonthReportCard(items: provider.monthReport);
 
             if (isWide) {
               return Row(
@@ -61,13 +66,14 @@ class LaporanScreen extends StatelessWidget {
   }
 }
 
+// Kartu kiri: pie chart pengeluaran per kategori + daftar rincian di bawahnya.
 class _CategoryReportCard extends StatelessWidget {
   final List<CategoryReportItem> items;
   const _CategoryReportCard({required this.items});
 
   @override
   Widget build(BuildContext context) {
-    final total = items.fold<double>(0, (s, e) => s + e.total); // Logika asli dipertahankan
+    final total = items.fold<double>(0, (s, e) => s + e.total); // jumlah semua pengeluaran, buat hitung persentase tiap kategori
 
     return Container(
       padding: const EdgeInsets.all(22), // Padding di dalam kartu diperlebar agar lapang
@@ -119,8 +125,8 @@ class _CategoryReportCard extends StatelessWidget {
               )),
             ),
             const SizedBox(height: 20),
-            
-            // List Kategori di bawah chart
+
+            // List Kategori di bawah chart, diurutkan dari pengeluaran terbesar dulu
             for (final e in (items..sort((a, b) => b.total.compareTo(a.total)))) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6), // Spasi vertikal diperbesar sedikit
@@ -178,13 +184,17 @@ class _CategoryReportCard extends StatelessWidget {
   }
 }
 
+// Kartu kanan: bar chart perbandingan pemasukan (hijau) vs pengeluaran (merah)
+// per bulan, 6 bulan terakhir.
 class _MonthReportCard extends StatelessWidget {
   final List<MonthReportItem> items;
   const _MonthReportCard({required this.items});
 
   @override
   Widget build(BuildContext context) {
-    final maxVal = items.fold<double>(1, (m, e) => [m, e.income, e.expense].reduce((a, b) => a > b ? a : b)); // Logika asli dipertahankan[cite: 3]
+    // Nilai tertinggi di antara semua income/expense -> dipakai buat nentuin
+    // skala maksimal sumbu-Y chart (dikali 1.15 di bawah biar ada ruang napas).
+    final maxVal = items.fold<double>(1, (m, e) => [m, e.income, e.expense].reduce((a, b) => a > b ? a : b));
 
     return Container(
       padding: const EdgeInsets.all(22), // Padding di dalam kartu disamakan (22)
@@ -237,16 +247,17 @@ class _MonthReportCard extends StatelessWidget {
                   leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)), // Logika asli dipertahankan[cite: 3]
                   rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)), // Logika asli dipertahankan[cite: 3]
                   topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)), // Logika asli dipertahankan[cite: 3]
+                  // Label sumbu-X: ubah "2026-07" (format dari backend) jadi "Jul 26".
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        final i = value.toInt(); // Logika asli dipertahankan[cite: 3]
-                        if (i < 0 || i >= items.length) return const SizedBox.shrink(); // Logika asli dipertahankan[cite: 3]
-                        final month = items[i].month; // Logika asli dipertahankan[cite: 3]
-                        final parts = month.split('-'); // Logika asli dipertahankan[cite: 3]
+                        final i = value.toInt();
+                        if (i < 0 || i >= items.length) return const SizedBox.shrink();
+                        final month = items[i].month; // format: "YYYY-MM"
+                        final parts = month.split('-');
                         const names = ['', 'Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-                        final label = '${names[int.parse(parts[1])]} ${parts[0].substring(2)}'; // Logika asli dipertahankan[cite: 3]
+                        final label = '${names[int.parse(parts[1])]} ${parts[0].substring(2)}'; // "Jul 26"
                         return Padding(
                           padding: const EdgeInsets.only(top: 8), 
                           child: Text(

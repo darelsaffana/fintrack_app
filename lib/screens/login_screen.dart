@@ -8,6 +8,7 @@ import 'forgot_password_screen.dart';
 import 'main_shell.dart';
 import 'register_screen.dart';
 
+// Halaman awal aplikasi kalau user belum login. Kalau berhasil, lempar ke MainShell.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -21,22 +22,28 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _loading = false;
   String? _error;
-  bool _obscurePassword = true;
+  bool _obscurePassword = true; // toggle show/hide untuk field password
 
+  // Dipanggil saat tombol "Masuk" ditekan.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _loading = true; _error = null; });
     try {
+      // Login lewat AuthProvider (yang manggil POST /login ke backend & simpan token).
       await context.read<AuthProvider>().login(_email.text.trim(), _password.text);
+      // Setelah login sukses, langsung tarik semua data awal (transaksi, kategori, dll).
       if (mounted) await context.read<AppProvider>().loadAll();
 
       if (mounted) {
+        // pushAndRemoveUntil(..., (route) => false) -> hapus semua history halaman
+        // sebelumnya, jadi user gak bisa "back" ke halaman login lagi setelah masuk.
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const MainShell()),
           (route) => false,
         );
       }
     } catch (e) {
+      // Gagal login (email/password salah, dll) -> tampilkan pesan error dari server.
       setState(() => _error = extractErrorMessage(e));
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -45,6 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Helper biar semua TextFormField di halaman ini (email & password) punya
+    // gaya/warna/border yang sama persis, tanpa nulis ulang tiap kali.
     InputDecoration fieldDecoration({required String labelText, required IconData prefixIcon, Widget? suffixIcon}) {
       return InputDecoration(
         labelText: labelText,
@@ -135,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 32),
 
                     // FORM INPUTS
+                    // Field email, divalidasi wajib diisi + format harus mengandung "@" dan domain.
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,
@@ -152,6 +162,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+                    // Field password, wajib diisi + minimal 6 karakter (sinkron dengan aturan backend).
+                    // suffixIcon-nya tombol mata buat show/hide teks password.
                     TextFormField(
                       controller: _password,
                       obscureText: _obscurePassword,
@@ -170,6 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
+                    // Link "Lupa Password?" -> buka alur ForgotPasswordScreen -> ResetPasswordScreen.
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -181,6 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
+                    // Kotak pesan error (email/password salah, dll), cuma tampil kalau ada error.
                     if (_error != null) ...[
                       const SizedBox(height: 16),
                       Container(
@@ -204,6 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 28),
 
                     // BUTTONS
+                    // Tombol utama "Masuk" -> nonaktif & tampilkan spinner selagi _loading true.
                     ElevatedButton(
                       onPressed: _loading ? null : _submit,
                       style: ElevatedButton.styleFrom(
@@ -225,6 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                     ),
                     const SizedBox(height: 16),
+                    // Link ke halaman Register buat yang belum punya akun.
                     TextButton(
                       onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
                       style: TextButton.styleFrom(

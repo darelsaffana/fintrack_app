@@ -6,6 +6,9 @@ import '../providers/auth_provider.dart'; // Tambahkan import auth
 import '../widgets/empty_state.dart';
 import '../widgets/transaction_tile.dart';
 
+// Tab pertama di bottom nav / sidebar: ringkasan saldo, pemasukan/pengeluaran,
+// dan daftar transaksi terakhir. Datanya diambil dari GET /dashboard (backend),
+// sudah dihitung total-totalnya di server jadi di sini tinggal ditampilkan.
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
@@ -17,6 +20,8 @@ class DashboardScreen extends StatelessWidget {
     // Ambil data user
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
+    // Bikin inisial (max 2 huruf) dari nama user, buat fallback avatar kalau
+    // belum upload foto profil. Kalau nama kosong, fallback ke huruf 'P'.
     final initials = (user?.name.isNotEmpty == true)
         ? user!.name
             .trim()
@@ -27,12 +32,15 @@ class DashboardScreen extends StatelessWidget {
         : 'P';
 
     // Helper untuk image
+    // Prioritas: preview foto yang baru saja dipilih (belum tentu selesai
+    // upload) > foto yang sudah tersimpan di server > null (pakai inisial).
     ImageProvider? getAvatarImage() {
       if (auth.avatarPreview != null) return MemoryImage(auth.avatarPreview!);
       if (user?.avatarUrl != null) return NetworkImage(user!.avatarUrl!);
       return null;
     }
 
+    // RefreshIndicator -> tarik ke bawah buat reload semua data dashboard.
     return RefreshIndicator(
       onRefresh: () => provider.loadAll(),
       child: SingleChildScrollView(
@@ -221,6 +229,8 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  // Satu kartu kecil di baris "Pemasukan / Pengeluaran / Saldo" —
+  // dipanggil 3x dengan title/amount/icon/color yang beda-beda.
   Widget _buildQuickAction(
       {required BuildContext context,
       required String title,

@@ -22,6 +22,8 @@ class _MainShellState extends State<MainShell> {
   int _index = 0;
   bool _loaded = false;
 
+  // Daftar halaman & tombol navigasi, urutannya harus sama persis
+  // (index ke-0 _pages = index ke-0 _destinations = tab Dashboard, dst).
   static const _pages = [
     DashboardScreen(),
     TransaksiScreen(),
@@ -40,12 +42,17 @@ class _MainShellState extends State<MainShell> {
   @override
   void initState() {
     super.initState();
+    // Tarik semua data (transaksi, kategori, dashboard) sekali di awal,
+    // setelah frame pertama selesai digambar (biar tidak nge-block build awal).
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<AppProvider>().loadAll();
       if (mounted) setState(() => _loaded = true);
     });
   }
 
+  // Bikin ikon nav biasa, TAPI kalau ini tab "Transaksi" dan ada transaksi
+  // yang belum dikasih kategori (count > 0), ikonnya dikasih badge angka
+  // merah kecil sebagai pengingat ke user.
   Widget _navIcon(
     BuildContext context,
     ({IconData icon, String label}) d, {
@@ -64,11 +71,14 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width >= 800;
+    final isWide = MediaQuery.of(context).size.width >= 800; // breakpoint desktop vs mobile
     final provider = context.watch<AppProvider>();
+    // Hitung berapa transaksi yang categoryId-nya null -> jadi angka di badge notifikasi.
     final uncategorizedCount =
         provider.transactions.where((t) => t.categoryId == null).length;
 
+    // IndexedStack (bukan cuma render _pages[_index]) dipakai biar tiap halaman
+    // tetap "hidup" di background saat pindah tab (state form dll gak reset).
     final body = !_loaded && provider.loading
         ? Center(
             child: CircularProgressIndicator(color: AppColors.accent(context)))
@@ -92,7 +102,8 @@ class _MainShellState extends State<MainShell> {
       );
     }
 
-// TAMPILAN MOBILE (Narrow Screens)
+// TAMPILAN MOBILE (Narrow Screens) — pakai bottom NavigationBar melayang,
+// bukan sidebar, karena layar sempit.
     return Scaffold(
       body: SafeArea(
         child: body,
@@ -123,6 +134,9 @@ class _MainShellState extends State<MainShell> {
               labelBehavior: NavigationDestinationLabelBehavior
                   .alwaysHide, // Menyembunyikan teks label seperti desain
               destinations: [
+                // `label: d.label` tetap diisi (dipakai buat aksesibilitas/semantics),
+                // dan `tooltip: d.label` bikin nama tab muncul pas ikon di-long-press,
+                // soalnya teks labelnya sendiri disembunyikan (alwaysHide di atas).
                 for (final d in _destinations)
                   NavigationDestination(
                     icon: _navIcon(context, d,
@@ -141,6 +155,8 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
+// Sidebar kiri buat layar lebar (desktop/laptop) — versi "besar" dari
+// bottom NavigationBar di mode mobile, isinya sama (5 menu + badge notifikasi).
 class _Sidebar extends StatelessWidget {
   final int index;
   final ValueChanged<int> onSelect;
@@ -216,6 +232,8 @@ class _Sidebar extends StatelessWidget {
                         horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
+                        // Sama seperti _navIcon di bottom nav: badge merah muncul
+                        // cuma di menu Transaksi & cuma kalau ada transaksi tanpa kategori.
                         Badge(
                           isLabelVisible: _items[i].label == 'Transaksi' && uncategorizedCount > 0,
                           label: Text('$uncategorizedCount'),

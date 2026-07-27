@@ -6,6 +6,8 @@ import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
 import 'main_shell.dart';
 
+// Halaman pendaftaran akun baru. Kalau berhasil, user langsung login otomatis
+// dan diarahkan ke MainShell (sama seperti alur setelah login biasa).
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -23,26 +25,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _error;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-  bool _agreedToTerms = false;
+  bool _agreedToTerms = false; // wajib dicentang sebelum bisa daftar (lihat _submit)
 
+  // Dipanggil saat tombol "Daftar" ditekan.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Gerbang tambahan di luar validator form: checkbox Syarat & Ketentuan
+    // wajib dicentang dulu, kalau belum langsung tolak tanpa hit ke backend.
     if (!_agreedToTerms) {
       setState(() => _error = 'Anda harus menyetujui Syarat & Ketentuan serta Kebijakan Privasi');
       return;
     }
+
     setState(() { _loading = true; _error = null; });
     try {
+      // Daftar akun baru lewat AuthProvider (POST /register), sekaligus auto-login.
       await context.read<AuthProvider>().register(_name.text.trim(), _email.text.trim(), _password.text, _confirm.text);
+      // Tarik data awal (kategori default yang dibikinkan backend, dll).
       if (mounted) await context.read<AppProvider>().loadAll();
 
       if (mounted) {
+        // Hapus semua history halaman biar user gak bisa "back" ke form register lagi.
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const MainShell()),
           (route) => false,
         );
       }
     } catch (e) {
+      // Gagal (email sudah dipakai, password gak cocok, dll) -> tampilkan pesan dari server.
       setState(() => _error = extractErrorMessage(e));
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -113,6 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 32),
 
                           // INPUT FIELDS (NAMA, EMAIL, PASSWORD, CONFIRM)
+                          // Nama: wajib diisi, minimal 3 karakter.
                           TextFormField(
                             controller: _name,
                             textCapitalization: TextCapitalization.words,
@@ -126,6 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
+                          // Email: wajib diisi + harus sesuai format standar (ada "@" dan domain).
                           TextFormField(
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
@@ -142,6 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
+                          // Password: minimal 6 karakter, sinkron dengan validasi di backend.
                           TextFormField(
                             controller: _password,
                             obscureText: _obscurePassword,
@@ -159,6 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             validator: (v) => (v == null || v.length < 6) ? 'Minimal 6 karakter' : null,
                           ),
                           const SizedBox(height: 16),
+                          // Konfirmasi password: harus persis sama dengan isi field password di atas.
                           TextFormField(
                             controller: _confirm,
                             obscureText: _obscureConfirm,
@@ -205,6 +220,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 16),
 
                           // CHECKBOX SYARAT & KETENTUAN
+                          // _agreedToTerms harus true dulu sebelum _submit() lanjut proses daftar
+                          // (lihat pengecekannya di awal method _submit di atas).
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [

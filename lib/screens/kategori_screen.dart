@@ -6,6 +6,8 @@ import '../models/category.dart';
 import '../providers/app_provider.dart';
 import '../widgets/empty_state.dart';
 
+// Tab "Kategori": daftar kategori pemasukan/pengeluaran milik user, bisa
+// tambah/ubah/hapus. Tiap kategori juga nunjukin berapa transaksi yang pakai dia.
 class KategoriScreen extends StatefulWidget {
   const KategoriScreen({super.key});
 
@@ -14,15 +16,17 @@ class KategoriScreen extends StatefulWidget {
 }
 
 class _KategoriScreenState extends State<KategoriScreen> {
-  String _tab = 'expense'; // Logika asli dipertahankan
+  String _tab = 'expense'; // tab aktif: 'expense' (pengeluaran) atau 'income' (pemasukan)
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>(); // Logika asli dipertahankan
-    final list = provider.categories.where((c) => c.type == _tab).toList(); // Logika asli dipertahankan
-    final counts = <int, int>{}; // Logika asli dipertahankan
+    final list = provider.categories.where((c) => c.type == _tab).toList(); // cuma kategori sesuai tab yang aktif
+    // Hitung berapa banyak transaksi yang pakai tiap category_id, buat
+    // ditampilkan sebagai "X transaksi" di kartu kategorinya masing-masing.
+    final counts = <int, int>{};
     for (final t in provider.transactions) {
-      if (t.categoryId != null) counts[t.categoryId!] = (counts[t.categoryId!] ?? 0) + 1; // Logika asli dipertahankan
+      if (t.categoryId != null) counts[t.categoryId!] = (counts[t.categoryId!] ?? 0) + 1;
     }
 
     return Padding(
@@ -190,7 +194,9 @@ class _KategoriScreenState extends State<KategoriScreen> {
     );
   }
 
-  // Dialog konfirmasi hapus dibuat melengkung modern
+  // Nampilin dialog konfirmasi sebelum benar-benar hapus kategori (DELETE
+  // /categories/{id}). Transaksi yang sudah pakai kategori ini TIDAK ikut
+  // terhapus (backend cuma set category_id-nya jadi null).
   Future<void> _confirmDelete(BuildContext context, Category c) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -221,6 +227,8 @@ class _KategoriScreenState extends State<KategoriScreen> {
     }
   }
 
+  // Buka bottom sheet form tambah/ubah kategori. `existing` null = mode tambah,
+  // diisi = mode ubah (form terisi otomatis dari data kategori tsb).
   void _openForm(BuildContext context, {Category? existing}) {
     showModalBottomSheet(
       context: context,
@@ -293,8 +301,10 @@ class _CategoryFormState extends State<_CategoryForm> {
   @override
   void initState() {
     super.initState();
-    _name.text = widget.existing?.name ?? ''; // Logika asli dipertahankan[cite: 2]
-    _type = widget.existing?.type ?? widget.defaultType; // Logika asli dipertahankan[cite: 2]
+    // Mode ubah -> isi form dari data kategori yang ada.
+    // Mode tambah -> nama kosong, tipe ikut tab yang lagi aktif (defaultType).
+    _name.text = widget.existing?.name ?? '';
+    _type = widget.existing?.type ?? widget.defaultType;
     if (widget.existing != null) {
       _color = hexToColor(widget.existing!.color);
     }
@@ -463,23 +473,27 @@ class _CategoryFormState extends State<_CategoryForm> {
     );
   }
 
-  String _colorToHex(Color c) => '#${c.value.toRadixString(16).substring(2).toUpperCase()}'; // Logika asli dipertahankan[cite: 2]
+  // Ubah Color (dari color picker Flutter) jadi string hex "#RRGGBB" yang
+  // dipahami backend (kolom `color` di tabel categories).
+  String _colorToHex(Color c) => '#${c.value.toRadixString(16).substring(2).toUpperCase()}';
 
+  // Dipanggil saat tombol "Simpan" ditekan -> panggil addCategory (POST) atau
+  // editCategory (PUT) tergantung mode tambah/ubah, lalu tutup bottom sheet.
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return; // Logika asli dipertahankan[cite: 2]
-    setState(() { _saving = true; _error = null; }); // Logika asli dipertahankan[cite: 2]
+    if (!_formKey.currentState!.validate()) return;
+    setState(() { _saving = true; _error = null; });
     try {
-      final provider = context.read<AppProvider>(); // Logika asli dipertahankan[cite: 2]
+      final provider = context.read<AppProvider>();
       if (widget.existing == null) {
-        await provider.addCategory(_name.text.trim(), _type, _colorToHex(_color!)); // Logika asli dipertahankan[cite: 2]
+        await provider.addCategory(_name.text.trim(), _type, _colorToHex(_color!));
       } else {
-        await provider.editCategory(widget.existing!.id, _name.text.trim(), _type, _colorToHex(_color!)); // Logika asli dipertahankan[cite: 2]
+        await provider.editCategory(widget.existing!.id, _name.text.trim(), _type, _colorToHex(_color!));
       }
-      if (mounted) Navigator.pop(context); // Logika asli dipertahankan[cite: 2]
+      if (mounted) Navigator.pop(context);
     } catch (e) {
-      setState(() => _error = extractErrorMessage(e)); // Logika asli dipertahankan[cite: 2]
+      setState(() => _error = extractErrorMessage(e));
     } finally {
-      if (mounted) setState(() => _saving = false); // Logika asli dipertahankan[cite: 2]
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

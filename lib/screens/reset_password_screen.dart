@@ -4,6 +4,9 @@ import '../core/theme.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 
+// Halaman langkah 2 dari alur "Lupa Password": user masukkan kode reset yang
+// diterima (dari email) + password baru. Dibuka dari ForgotPasswordScreen,
+// jadi email-nya sudah otomatis terisi (dikirim lewat constructor).
 class ResetPasswordScreen extends StatefulWidget {
   final String email;
   const ResetPasswordScreen({super.key, required this.email});
@@ -14,24 +17,31 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _token = TextEditingController();
+  final _token = TextEditingController(); // kode reset dari email
   final _password = TextEditingController();
-  final _confirm = TextEditingController();
+  final _confirm = TextEditingController(); // buat mastiin user gak typo password barunya
   final _service = AuthService();
   bool _loading = false;
   String? _error;
 
+  // Dipanggil saat tombol "Reset Password" ditekan.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
     setState(() { _loading = true; _error = null; });
     try {
+      // Panggil endpoint POST /reset-password.
+      // Backend cek: kode reset valid & belum expired -> ganti password user (lihat AuthController::resetPassword).
       await _service.resetPassword(
         email: widget.email,
         token: _token.text.trim(),
         password: _password.text,
         passwordConfirmation: _confirm.text,
       );
+
       if (mounted) {
+        // Sukses -> kasih notifikasi, lalu lempar balik ke halaman login
+        // (pushAndRemoveUntil biar user gak bisa "back" ke halaman reset lagi).
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password berhasil direset, silakan masuk kembali')),
         );
@@ -41,6 +51,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         );
       }
     } catch (e) {
+      // Gagal (kode salah/expired, password kurang dari 6 karakter, dll)
       setState(() => _error = extractErrorMessage(e));
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -74,16 +85,20 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Judul halaman
                     Text(
                       'Reset Password',
                       style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.text(context)),
                     ),
                     const SizedBox(height: 8),
+                    // Ingetin user buat cek email-nya, sekalian nampilin email tujuan
                     Text(
                       'Cek email ${widget.email} untuk kode reset, lalu masukkan di bawah bersama password barumu.',
                       style: TextStyle(color: AppColors.muted(context), fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 28),
+
+                    // Input kode reset (dikirim backend lewat email)
                     TextFormField(
                       controller: _token,
                       style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
@@ -97,6 +112,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       validator: (v) => (v == null || v.trim().isEmpty) ? 'Kode reset wajib diisi' : null,
                     ),
                     const SizedBox(height: 16),
+
+                    // Input password baru, minimal 6 karakter (samain sama aturan validasi di backend)
                     TextFormField(
                       controller: _password,
                       obscureText: true,
@@ -111,6 +128,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       validator: (v) => (v == null || v.length < 6) ? 'Minimal 6 karakter' : null,
                     ),
                     const SizedBox(height: 16),
+
+                    // Input konfirmasi -> divalidasi harus sama persis dengan _password
                     TextFormField(
                       controller: _confirm,
                       obscureText: true,
@@ -124,11 +143,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       validator: (v) => (v != _password.text) ? 'Konfirmasi tidak cocok' : null,
                     ),
+
+                    // Kotak pesan error dari backend (kode salah/expired, dst)
                     if (_error != null) ...[
                       const SizedBox(height: 16),
                       Text(_error!, style: TextStyle(color: AppColors.expense(context), fontWeight: FontWeight.bold, fontSize: 13)),
                     ],
                     const SizedBox(height: 24),
+
+                    // Tombol submit -> nonaktif & tampilkan spinner selagi _loading true
                     ElevatedButton(
                       onPressed: _loading ? null : _submit,
                       style: ElevatedButton.styleFrom(
