@@ -4,6 +4,7 @@ import '../core/api_client.dart';
 import '../core/theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/auth_provider.dart';
+import 'forgot_password_screen.dart';
 import 'main_shell.dart';
 import 'register_screen.dart';
 
@@ -168,6 +169,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (v.length < 6) return 'Password minimal 6 karakter';
                         return null;
                       },
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                        ),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.muted(context)),
+                        child: const Text('Lupa Password?', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                      ),
                     ),
 
                     if (_error != null) ...[
