@@ -278,25 +278,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
 
-            // 2. TEKS SYARAT & KETENTUAN
-            Positioned(
-              bottom: 24,
-              left: 24,
-              right: 24,
-              child: Text.rich(
-                TextSpan(
-                  text: 'Dengan mendaftar, Anda menyetujui\n',
-                  children: [
-                    TextSpan(text: 'Syarat & Ketentuan', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
-                    TextSpan(text: ' serta '),
-                    TextSpan(text: 'Kebijakan Privasi', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
-                    TextSpan(text: ' kami.'),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.muted(context), fontSize: 12, height: 1.5),
-              ),
-            ),
+            // // 2. TEKS SYARAT & KETENTUAN
+            // Positioned(
+            //   bottom: 24,
+            //   left: 24,
+            //   right: 24,
+            //   child: Text.rich(
+            //     TextSpan(
+            //       text: 'Dengan mendaftar, Anda menyetujui\n',
+            //       children: [
+            //         TextSpan(text: 'Syarat & Ketentuan', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
+            //         TextSpan(text: ' serta '),
+            //         TextSpan(text: 'Kebijakan Privasi', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
+            //         TextSpan(text: ' kami.'),
+            //       ],
+            //     ),
+            //     textAlign: TextAlign.center,
+            //     style: TextStyle(color: AppColors.muted(context), fontSize: 12, height: 1.5),
+            //   ),
+            // ),
 
             // 3. TOMBOL BACK CUSTOM
             Positioned(
