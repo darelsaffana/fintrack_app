@@ -114,7 +114,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textInputAction: TextInputAction.next,
                             style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Nama Lengkap', prefixIcon: Icons.person_rounded),
-                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
+                            validator: (v) {
+                              if (v == null || v.trim().isEmpty) return 'Nama wajib diisi';
+                              if (v.trim().length < 3) return 'Nama minimal 3 karakter';
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
