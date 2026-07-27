@@ -109,6 +109,7 @@ class _MainShellState extends State<MainShell> {
                     selectedIcon: Icon(d.icon,
                         color: AppColors.accent(context), size: 24),
                     label: d.label,
+                    tooltip: d.label,
                   ),
               ],
             ),
