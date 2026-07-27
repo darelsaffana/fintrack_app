@@ -46,10 +46,28 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
+  Widget _navIcon(
+    BuildContext context,
+    ({IconData icon, String label}) d, {
+    required Color color,
+    required int count,
+  }) {
+    final icon = Icon(d.icon, color: color, size: 24);
+    // Hanya tab Transaksi yang relevan dengan transaksi tanpa kategori.
+    if (d.label != 'Transaksi' || count == 0) return icon;
+    return Badge(
+      label: Text('$count'),
+      backgroundColor: AppColors.expense(context),
+      child: icon,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width >= 800;
     final provider = context.watch<AppProvider>();
+    final uncategorizedCount =
+        provider.transactions.where((t) => t.categoryId == null).length;
 
     final body = !_loaded && provider.loading
         ? Center(
@@ -62,7 +80,10 @@ class _MainShellState extends State<MainShell> {
         body: Row(
           children: [
             _Sidebar(
-                index: _index, onSelect: (i) => setState(() => _index = i)),
+              index: _index,
+              onSelect: (i) => setState(() => _index = i),
+              uncategorizedCount: uncategorizedCount,
+            ),
             Expanded(
               child: body,
             ),
@@ -104,10 +125,10 @@ class _MainShellState extends State<MainShell> {
               destinations: [
                 for (final d in _destinations)
                   NavigationDestination(
-                    icon:
-                        Icon(d.icon, color: AppColors.muted(context), size: 24),
-                    selectedIcon: Icon(d.icon,
-                        color: AppColors.accent(context), size: 24),
+                    icon: _navIcon(context, d,
+                        color: AppColors.muted(context), count: uncategorizedCount),
+                    selectedIcon: _navIcon(context, d,
+                        color: AppColors.accent(context), count: uncategorizedCount),
                     label: d.label,
                     tooltip: d.label,
                   ),
@@ -123,7 +144,12 @@ class _MainShellState extends State<MainShell> {
 class _Sidebar extends StatelessWidget {
   final int index;
   final ValueChanged<int> onSelect;
-  const _Sidebar({required this.index, required this.onSelect});
+  final int uncategorizedCount;
+  const _Sidebar({
+    required this.index,
+    required this.onSelect,
+    required this.uncategorizedCount,
+  });
 
   static const _items = [
     (icon: Icons.dashboard_rounded, label: 'Dashboard'),
@@ -190,12 +216,17 @@ class _Sidebar extends StatelessWidget {
                         horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
-                        Icon(
-                          _items[i].icon,
-                          size: 20,
-                          color: i == index
-                              ? AppColors.accent(context)
-                              : AppColors.muted(context),
+                        Badge(
+                          isLabelVisible: _items[i].label == 'Transaksi' && uncategorizedCount > 0,
+                          label: Text('$uncategorizedCount'),
+                          backgroundColor: AppColors.expense(context),
+                          child: Icon(
+                            _items[i].icon,
+                            size: 20,
+                            color: i == index
+                                ? AppColors.accent(context)
+                                : AppColors.muted(context),
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Text(
