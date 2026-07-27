@@ -47,6 +47,24 @@ class AuthService {
     return AppUser.fromJson(res.data);
   }
 
+  Future<void> forgotPassword(String email) async {
+    await ApiClient.instance.dio.post('/forgot-password', data: {'email': email});
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    await ApiClient.instance.dio.post('/reset-password', data: {
+      'email': email,
+      'token': token,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    });
+  }
+
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
