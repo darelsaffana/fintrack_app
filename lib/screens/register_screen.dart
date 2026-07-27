@@ -23,9 +23,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _error;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _agreedToTerms = false;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_agreedToTerms) {
+      setState(() => _error = 'Anda harus menyetujui Syarat & Ketentuan serta Kebijakan Privasi');
+      return;
+    }
     setState(() { _loading = true; _error = null; });
     try {
       await context.read<AuthProvider>().register(_name.text.trim(), _email.text.trim(), _password.text, _confirm.text);
@@ -114,7 +119,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textInputAction: TextInputAction.next,
                             style: TextStyle(color: AppColors.text(context), fontWeight: FontWeight.w600),
                             decoration: fieldDecoration(labelText: 'Nama Lengkap', prefixIcon: Icons.person_rounded),
-                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
+                            validator: (v) {
+                              if (v == null || v.trim().isEmpty) return 'Nama wajib diisi';
+                              if (v.trim().length < 3) return 'Nama minimal 3 karakter';
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -193,7 +202,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                           ),
 
-                          const SizedBox(height: 28),
+                          const SizedBox(height: 16),
+
+                          // CHECKBOX SYARAT & KETENTUAN
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: Checkbox(
+                                  value: _agreedToTerms,
+                                  activeColor: AppColors.accent(context),
+                                  onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: 'Saya menyetujui ',
+                                      style: TextStyle(color: AppColors.muted(context), fontSize: 13, fontWeight: FontWeight.w500),
+                                      children: [
+                                        TextSpan(text: 'Syarat & Ketentuan', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
+                                        const TextSpan(text: ' serta '),
+                                        TextSpan(text: 'Kebijakan Privasi', style: TextStyle(color: AppColors.accent(context), fontWeight: FontWeight.bold)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12),
 
                           // TOMBOL DAFTAR[cite: 2]
                           ElevatedButton(
