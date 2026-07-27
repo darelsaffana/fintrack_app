@@ -163,7 +163,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                         ),
                       ),
-                      validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'Password wajib diisi';
+                        if (v.length < 6) return 'Password minimal 6 karakter';
+                        return null;
+                      },
                     ),
 
                     if (_error != null) ...[
